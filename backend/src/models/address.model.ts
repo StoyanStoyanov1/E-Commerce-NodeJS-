@@ -1,14 +1,14 @@
 export interface Address {
     id: number;
     street: string;
-    number: bigint;
-    post: bigint;
+    number: string;
+    post: string;
     city: string;
 }
 
 export interface CreateAddressDto {
     street: string;
-    number: bigint;
-    post: bigint;
+    number: string;
+    post: string;
     city: string;
 }

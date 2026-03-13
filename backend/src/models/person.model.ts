@@ -1,20 +1,20 @@
-import {Address} from "node:cluster";
+import {Address, CreateAddressDto} from "./address.model";
 
 export interface Person {
-    id: bigint;
-    firstName: string;
-    lastName: string;
-    anotherName: string;
-    phone: string;
-    dateOfBirth: Date;
-    address: Address;
-}
-
-export interface CreatePersonDto extends Person {
+    id: number;
     firstName: string;
     lastName: string;
     anotherName?: string;
     phone: string;
     dateOfBirth: Date;
     address: Address;
+}
+
+export interface CreatePersonDto {
+    firstName: string;
+    lastName: string;
+    anotherName?: string;
+    phone: string;
+    dateOfBirth: Date;
+    address: CreateAddressDto;
 }

@@ -1,4 +1,5 @@
-import {Person} from './person.model.ts';
+import {CreatePersonDto, Person} from "./person.model";
+
 export enum Role {
     USER = "USER",
     ADMIN = "ADMIN",
@@ -6,20 +7,18 @@ export enum Role {
 }
 
 export interface User {
-    id: bigint;
+    id: number;
     email: string;
     role: Role;
     person: Person;
     isVerified: boolean;
     verifiedAt?: Date;
-    password: string;
+    passwordHash: string;
 }
 
 export interface CreateUserDto {
     email: string;
-    role: Role;
-    person: Person;
-    isVerified: boolean;
-    verifiedAt?: Date;
     password: string;
+    person: CreatePersonDto;
+    role: Role;
 }
