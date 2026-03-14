@@ -6,10 +6,10 @@ export enum Role {
 }
 
 export interface User {
-    id: number;
+    id: string;
     email: string;
     role: Role;
-    person_id: number;
+    person_id: string;
     isVerified: boolean;
     verifiedAt?: Date;
     password: string;
@@ -18,6 +18,6 @@ export interface User {
 export interface CreateUserDto {
     email: string;
     password: string;
-    person_id: number;
+    person_id: string;
     role: Role;
 }
