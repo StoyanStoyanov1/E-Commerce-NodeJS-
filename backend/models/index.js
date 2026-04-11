@@ -1,1 +1,7 @@
-export { default as Product } from "./product.js";
+import Product from "./product.js";
+import Category from "./category.js";
+
+export {
+    Product,
+    Category,
+}

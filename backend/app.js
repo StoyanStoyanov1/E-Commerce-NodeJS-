@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import morgan from "morgan";
-import ProductRouter from "./routers/product.js";
+import {ProductRouter, CategoriesRouter} from "./routers/index.js";
 dotenv.config();
 
 import express from "express";
@@ -20,6 +20,7 @@ app.use(morgan('tiny'));
 
 //Routers
 app.use(`${api}/products`, ProductRouter);
+app.use(`${api}/categories`, CategoriesRouter);
 
 
 mongoose.connect(connectionString)
