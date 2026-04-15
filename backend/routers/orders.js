@@ -73,6 +73,41 @@ router.post("/", async (req, res) => {
     } catch (error) {
         res.status(500).json({error, message: error.message});
     }
+});
+
+router.put("/:id", async (req, res) => {
+    try {
+        const order = await Order.findByIdAndUpdate(req.params.id, {
+            status: req.body.status,
+        },
+            {new: true}
+        );
+
+        if (!order) {
+            return res.status(400).json({success: false, message: "The order cannot be updated."});
+        }
+
+        res.status(200).send(order);
+
+    } catch (error) {
+        res.status(500).json({error, message: error.message});
+    }
+
+});
+
+router.delete("/:id", async (req, res) => {
+    try {
+        const order = await Order.findByIdAndDelete(req.params.id);
+
+        if (!order) {
+            return res.status(400).json({success: false, message: "The order is not found."});
+        }
+
+        return res.status(200).json({success: true, message: "The order is deleted."});
+
+    } catch (error) {
+        res.status(500).json({error, message: error.message});
+    }
 })
 
 export default router;
