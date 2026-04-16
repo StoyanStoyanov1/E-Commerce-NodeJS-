@@ -2,8 +2,21 @@ import express from "express";
 import {Category, Product} from "../models/index.js";
 const router = express.Router();
 import mongoose from "mongoose";
+import multer from "multer";
 
-router.post(`/`, async (req, res) => {
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "public/uploads");
+    },
+    filename: function (req, file, cb) {
+        const fileName = file.originalname.split(" ").join("-");
+        cb(null, fileName + "-" + Date.now());
+    }
+})
+
+const uploadOptions = multer({ storage: storage });
+
+router.post(`/`, uploadOptions.single("image"), async (req, res) => {
     try {
         const category = await Category.findById(req.body.category);
 
@@ -11,11 +24,14 @@ router.post(`/`, async (req, res) => {
             return res.status(400).json({message: "Invalid category!"});
         }
 
+        const fileName = req.file.filename;
+        const basePath = `${req.protocol}://${req.get("host")}/public/upload/`;
+
         let product = new Product({
             name: req.body.name,
             description: req.body.description,
             richDescription: req.body.richDescription,
-            image: req.body.image,
+            image: `${basePath}${fileName}`,
             brand: req.body.brand,
             price: req.body.price,
             category: req.body.category,
