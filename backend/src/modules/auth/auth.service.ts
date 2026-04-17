@@ -1,16 +1,16 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import prisma from "../../../prisma/client.js";
-import { RegisterDto, LoginDto} from "./auth.dto.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import prisma from "../../prisma/client.js";
+import type {RegisterDto, LoginDto} from "./auth.dto.js";
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || "secret";
 
 export const register = async (dto: RegisterDto) => {
     const existing = await prisma.user.findUnique({
         where: { email: dto.email },
     });
 
-    if (!existing) {
+    if (existing) {
         throw new Error("User already exists");
     }
 
@@ -23,35 +23,35 @@ export const register = async (dto: RegisterDto) => {
             role: {
                 create: {
                     name: "CUSTOMER",
-                }
-            }
-        }
+                },
+            },
+        },
     });
 
-    return {password: "", id: user.id, email: user.email };
-}
+    return { id: user.id, email: user.email };
+};
 
 export const login = async (dto: LoginDto) => {
     const user = await prisma.user.findUnique({
         where: { email: dto.email },
-        include: {role: true},
+        include: { role: true },
     });
 
     if (!user) {
-        throw new Error("Invalid Password or Email");
+        throw new Error("Incorrect email or password");
     }
 
     const isValid = await bcrypt.compare(dto.password, user.password);
 
     if (!isValid) {
-        throw new Error("Invalid Password or Email");
+        throw new Error("Incorrect email or password");
     }
 
     const token = jwt.sign(
         { userId: user.id, role: user.role?.name },
         JWT_SECRET,
-        {expiresIn: "1h"}
-    )
+        { expiresIn: "15m" }
+    );
 
-    return {token, userId: user.id, role: user.role?.name};
+    return { token, userId: user.id, role: user.role?.name };
 };

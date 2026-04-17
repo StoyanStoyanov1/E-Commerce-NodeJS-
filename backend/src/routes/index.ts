@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { getHome } from "../controllers/home.controller.js";
+import authRoutes from "../modules/auth/auth.routes.js";
 
 const router = Router();
 
-router.get('/', getHome);
+router.get('/auth', authRoutes);
 
 export default router;
