@@ -1,0 +1,13 @@
+model Role {
+  id     BigInt   @id @default(autoincrement())
+  name   RoleType @default(CUSTOMER)
+  userId String   @unique @db.Uuid
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+enum RoleType {
+  ADMIN
+  CUSTOMER
+  MODERATOR
+}
