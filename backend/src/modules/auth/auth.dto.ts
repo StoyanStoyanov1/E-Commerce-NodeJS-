@@ -11,3 +11,8 @@ export interface LoginDto {
 export interface RefreshTokenDto {
     refreshToken: string;
 }
+
+export interface ChangePasswordDto {
+    currentPassword: string;
+    newPassword: string;
+}

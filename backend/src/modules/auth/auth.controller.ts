@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import * as authService from './auth.service.js';
-import type {LoginDto, RefreshTokenDto, RegisterDto} from "./auth.dto.js";
+import type {ChangePasswordDto, LoginDto, RefreshTokenDto, RegisterDto} from "./auth.dto.js";
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -47,3 +47,12 @@ export const logoutAll = async (req: Request, res: Response, next: NextFunction)
         next(error);
     }
 };
+
+export const changePassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        await authService.changePassword(req.user!.userId, req.body as ChangePasswordDto)
+        res.status(204).send();
+    } catch (error) {
+        next(error);
+    }
+}

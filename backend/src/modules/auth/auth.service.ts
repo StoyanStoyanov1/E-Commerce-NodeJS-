@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import prisma from "../../prisma/client.js";
-import type { RegisterDto, LoginDto, RefreshTokenDto } from "./auth.dto.js";
+import type { RegisterDto, LoginDto, RefreshTokenDto, ChangePasswordDto} from "./auth.dto.js";
 import { AppError } from "../../shared/errors/AppError.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
@@ -107,3 +107,21 @@ export const logoutAll = async (userId: string) => {
         data: { isRevoked: true },
     });
 };
+
+export const changePassword = async (userId: string, dto: ChangePasswordDto) => {
+    const user = await prisma.user.findUnique({
+        where: {id: userId},
+    })
+
+    if (!user) throw new AppError("User not found", 401);
+
+    const isValid = await bcrypt.compare(dto.currentPassword, user.password);
+    if (!isValid) throw new AppError("Incorrect password", 401);
+
+    const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
+
+    await prisma.user.update({
+        where: {id: userId},
+        data: {password: hashedPassword},
+    })
+}
