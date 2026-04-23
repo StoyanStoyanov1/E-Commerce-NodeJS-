@@ -4,6 +4,7 @@ import crypto from "crypto";
 import prisma from "../../prisma/client.js";
 import type { RegisterDto, LoginDto, RefreshTokenDto, ChangePasswordDto} from "./auth.dto.js";
 import { AppError } from "../../shared/errors/AppError.js";
+import { sendVerificationEmail } from "../../shared/email/email.service.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
 const ACCESS_TOKEN_EXPIRY = "15m";
@@ -26,27 +27,6 @@ const saveRefreshToken = async (userId: string, token: string) => {
     });
 };
 
-export const register = async (dto: RegisterDto) => {
-    const existing = await prisma.user.findUnique({
-        where: { email: dto.email },
-    });
-
-    if (existing) {
-        throw new AppError("User already exists", 409);
-    }
-
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
-
-    const user = await prisma.user.create({
-        data: {
-            email: dto.email,
-            password: hashedPassword,
-            role: { create: { name: "CUSTOMER" } },
-        },
-    });
-
-    return { id: user.id, email: user.email };
-};
 
 export const login = async (dto: LoginDto) => {
     const user = await prisma.user.findUnique({
@@ -64,28 +44,6 @@ export const login = async (dto: LoginDto) => {
     await saveRefreshToken(user.id, refreshToken);
 
     return { accessToken, refreshToken, userId: user.id, role: user.role?.name };
-};
-
-export const refresh = async (dto: RefreshTokenDto) => {
-    const existing = await prisma.refreshToken.findUnique({
-        where: { token: dto.refreshToken },
-        include: { user: { include: { role: true } } },
-    });
-
-    if (!existing) throw new AppError("Invalid refresh token", 401);
-    if (existing.isRevoked) throw new AppError("Refresh token has been revoked", 401);
-    if (existing.expiresAt < new Date()) throw new AppError("Refresh token has expired", 401);
-
-    await prisma.refreshToken.update({
-        where: { id: existing.id },
-        data: { isRevoked: true },
-    });
-
-    const accessToken = generateAccessToken(existing.userId, existing.user.role?.name);
-    const newRefreshToken = generateRefreshToken();
-    await saveRefreshToken(existing.userId, newRefreshToken);
-
-    return { accessToken, refreshToken: newRefreshToken };
 };
 
 export const logout = async (dto: RefreshTokenDto) => {
@@ -125,3 +83,55 @@ export const changePassword = async (userId: string, dto: ChangePasswordDto) => 
         data: {password: hashedPassword},
     })
 }
+
+export const register = async (dto: RegisterDto) => {
+    const existing = await prisma.user.findUnique({
+        where: { email: dto.email },
+    });
+
+    if (existing) throw new AppError("User already exists", 409);
+
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+
+    const user = await prisma.user.create({
+        data: {
+            email: dto.email,
+            password: hashedPassword,
+            role: { create: { name: "CUSTOMER" } },
+        },
+    });
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 24);
+
+    await prisma.emailVerification.create({
+        data: { token, userId: user.id, expiresAt },
+    });
+
+    await sendVerificationEmail(user.email, token);
+
+    return { id: user.id, email: user.email };
+};
+
+export const verifyEmail = async (token: string) => {
+    const verification = await prisma.emailVerification.findUnique({
+        where: { token },
+    });
+
+    if (!verification) throw new AppError("Invalid verification token", 400);
+    if (verification.isUsed) throw new AppError("Token already used", 400);
+    if (verification.expiresAt < new Date()) throw new AppError("Token has expired", 400);
+
+    await prisma.emailVerification.update({
+        where: { id: verification.id },
+        data: { isUsed: true },
+    });
+
+    await prisma.user.update({
+        where: { id: verification.userId },
+        data: { isAktiv: true },
+    });
+};
+
+

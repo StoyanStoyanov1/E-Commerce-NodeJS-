@@ -56,3 +56,13 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
         next(error);
     }
 }
+
+export const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { token } = req.query as { token : string };
+        await authService.verifyEmail(token);
+        res.status(200).json({message: "Email verified successfully"});
+    } catch (error) {
+        next(error);
+    }
+}
