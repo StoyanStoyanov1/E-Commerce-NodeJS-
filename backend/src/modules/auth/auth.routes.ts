@@ -10,6 +10,11 @@ router.post("/refresh", AuthController.refresh);
 router.post("/logout", AuthController.logout);
 router.post("/logout-all", authenticate, AuthController.logoutAll);
 router.post("/change-password",authenticate, AuthController.changePassword);
+
+router.post("/forgot-password", AuthController.forgotPassword);
+router.post("/reset-password", AuthController.resetPassword);
+
 router.get("/verify-email", AuthController.verifyEmail);
+
 
 export default router;

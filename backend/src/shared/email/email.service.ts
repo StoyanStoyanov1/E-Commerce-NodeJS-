@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import * as nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
     host: "sandbox.smtp.mailtrap.io",
@@ -17,9 +17,25 @@ export const sendVerificationEmail = async (email: string, token: string) => {
         to: email,
         subject: "Verification email",
         html: `
-            <h2>Welcome in E-commerce!</h2>
-            <a href="${verificationUrl}">Confirm</a>
-            <
-        `,
+    <h2>Welcome in E-commerce!</h2>
+    <a href="${verificationUrl}">Confirm</a>
+`,
     })
 }
+
+export const sendPasswordResetEmail = async (email: string, token: string) => {
+    const resetUrl = `http://localhost:3000/auth/reset-password?token=${token}`;
+
+    await transporter.sendMail({
+        from: '"SuperWorker" <noreply@superworker.com>',
+        to: email,
+        subject: "Password Reset",
+        html: `
+            <h2>Password Reset Request</h2>
+            <p>Click the link below to reset your password:</p>
+            <a href="${resetUrl}">Reset Password</a>
+            <p>This link is valid for 1 hour.</p>
+            <p>If you did not request a password reset, please ignore this email.</p>
+        `,
+    });
+};

@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import * as authService from './auth.service.js';
-import type {ChangePasswordDto, LoginDto, RefreshTokenDto, RegisterDto} from "./auth.dto.js";
+import type {ChangePasswordDto, LoginDto, RefreshTokenDto, RegisterDto, ForgotPasswordDto, ResetPasswordDto} from "./auth.dto.js";
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -55,7 +55,7 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
     } catch (error) {
         next(error);
     }
-}
+};
 
 export const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -65,4 +65,24 @@ export const verifyEmail = async (req: Request, res: Response, next: NextFunctio
     } catch (error) {
         next(error);
     }
-}
+};
+
+
+export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        await authService.forgotPassword(req.body as ForgotPasswordDto);
+        res.status(200).json({ message: "If this email exists, a reset link has been sent" });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        await authService.resetPassword(req.body as ResetPasswordDto);
+        res.status(200).json({ message: "Password reset successfully" });
+    } catch (error) {
+        next(error);
+    }
+};
+
