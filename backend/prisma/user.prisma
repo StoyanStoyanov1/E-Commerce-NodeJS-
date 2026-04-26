@@ -12,6 +12,8 @@ model User {
   refreshTokens      RefreshToken[]
   emailVerifications EmailVerification[]
   passwordResets     PasswordReset[]
+
+  products Product[]
 }
 
 model RefreshToken {
