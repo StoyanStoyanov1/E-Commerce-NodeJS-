@@ -98,6 +98,15 @@ export const register = async (dto: RegisterDto) => {
             email: dto.email,
             password: hashedPassword,
             role: { create: { name: "CUSTOMER" } },
+            profile: {
+                create: {
+                    firstName: dto.firstName,
+                    middleName: dto.middleName,
+                    lastName: dto.lastName,
+                    phoneNumber: dto.phoneNumber,
+                    birthDate: new Date(dto.birthDate),
+                },
+            },
         },
     });
 
