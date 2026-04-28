@@ -21,4 +21,3 @@ export interface CreateProductImage {
 export interface UpdateProductImage {
     isPrimary: boolean;
 }
-

@@ -48,3 +48,41 @@ export const deleteProduct = async (productId: string) => {
 
     await prisma.product.delete({ where: { id: productId } });
 };
+
+export const updateProductCategory = async (productId: string, categoryIds: string[]) => {
+    const product = await prisma.product.findUnique({ where: { id: productId } });
+    if (!product) throw new AppError("Product not found", 404);
+
+    const categories = await prisma.category.findMany({
+        where: { id: { in: categoryIds } },
+    });
+
+    if (categories.length !== categoryIds.length) {
+        throw new AppError("One or more categories not found", 404);
+    }
+
+    await prisma.productCategory.deleteMany({ where: { productId } });
+
+    return prisma.productCategory.createMany({
+        data: categoryIds.map(categoryId => ({ productId, categoryId })),
+    });
+};
+
+export const getProducts = async () => {
+    return prisma.product.findMany({
+        include: {
+            categories: {
+                include: {
+                    category: true,
+                },
+            },
+            images: true,
+        },
+    });
+};
+
+export const getProductById = async (productId: string) => {
+    const product = await prisma.product.findUnique({ where: { id: productId } });
+    if (!product) throw new AppError("Product not found", 404);
+    return product;
+};
