@@ -24,3 +24,29 @@ export const createCategory = async (dto: CreateCategoryDto) => {
     });
 
 }
+
+export const updateCategory = async (categoryId: string, dto: UpdateCategoryDto) => {
+    const category = await prisma.category.findUnique({where: {id: categoryId}});
+
+    if (!category) throw new AppError("Category not found", 404);
+    if (dto.parentId) {
+        if (dto.parentId === categoryId) throw new AppError("Category cannot be its own parent", 400);
+
+        const parent = await prisma.category.findUnique({
+            where: {id: dto.parentId},
+        });
+        if (!parent) throw new AppError("Parent category not found", 404);
+    }
+
+    if (category.name === dto.name && category.parentId === dto.parentId) {
+        return category;
+    }
+
+    return prisma.category.update({
+        where: {id: categoryId},
+        data: {
+            name: dto.name,
+            parentId: dto.parentId,
+        }
+    });
+}
