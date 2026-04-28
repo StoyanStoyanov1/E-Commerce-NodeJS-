@@ -49,4 +49,35 @@ export const updateCategory = async (categoryId: string, dto: UpdateCategoryDto)
             parentId: dto.parentId,
         }
     });
+};
+
+export const deleteCategory = async (categoryId: string) => {
+    const category = await prisma.category.findUnique({where: {id: categoryId}});
+
+    if (!category) throw new AppError("Category not found", 404);
+
+    await prisma.category.updateMany({
+        where: {parentId: categoryId},
+        data: {parentId: null},
+    });
+
+    await prisma.category.delete({where: {id: categoryId}});
+
+};
+
+export const getCategories = async () => {
+    return prisma.category.findMany();
+};
+
+export const getCategoryById = async (categoryId: string) => {
+    const category = await prisma.category.findUnique({where: {id: categoryId}});
+    if (!category) throw new AppError("Category not found", 404);
+    return category;
+};
+
+
+export const getCategoryByName = async (name: string) => {
+    const category = await prisma.category.findFirst({where: {name: name}});
+    if (!category) throw new AppError("Category not found", 404);
+    return category;
 }
