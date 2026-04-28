@@ -22,6 +22,12 @@ export const createProduct = async (dto: CreateProductDto, sellerId: string) => 
                 create: dto.categoryIds.map(categoryId => ({ categoryId })),
             },
         },
+        include: {
+            categories: {
+                include: {category: true},
+            },
+            images: true,
+        }
     });
 };
 
