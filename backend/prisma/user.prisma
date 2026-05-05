@@ -14,6 +14,8 @@ model User {
   passwordResets     PasswordReset[]
 
   products Product[]
+  orders   Order[]
+  cart     Cart?
 }
 
 model RefreshToken {

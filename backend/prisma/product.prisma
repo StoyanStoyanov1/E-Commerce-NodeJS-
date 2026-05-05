@@ -11,6 +11,8 @@ model Product {
   user       User              @relation(fields: [sellerId], references: [id])
   images     ProductImage[]
   categories ProductCategory[]
+  orderItems OrderItem[]
+  cartItems  CartItem[]
 }
 
 model ProductImage {
