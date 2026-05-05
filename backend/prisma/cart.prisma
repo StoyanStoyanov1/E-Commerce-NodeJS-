@@ -18,4 +18,6 @@ model CartItem {
 
   cart    Cart    @relation(fields: [cartId], references: [id])
   product Product @relation(fields: [productId], references: [id])
+
+  @@unique([cartId, productId])
 }
