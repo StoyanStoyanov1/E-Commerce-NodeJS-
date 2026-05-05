@@ -17,7 +17,3 @@ export interface CreateProductImage {
     url: string;
     isPrimary: boolean;
 }
-
-export interface UpdateProductImage {
-    isPrimary: boolean;
-}

@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import * as productService from "./product.service.js";
-import type {CreateProductDto, UpdateProductDto, CreateProductImage, UpdateProductImage} from './product.dto.js';
+import type {CreateProductDto, UpdateProductDto, CreateProductImage} from './product.dto.js';
 
 export const createProduct = async(req: Request, res: Response, next: NextFunction) => {
     try {
@@ -55,4 +55,33 @@ export const getProductById = async(req: Request, res: Response, next: NextFunct
     } catch (error) {
         next(error);
     }
-}
+};
+
+export const createProductImage = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const image = await productService.addProductImage(req.params.id, req.body as CreateProductImage);
+        res.status(201).json(image);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deleteProductImage = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        await productService.deleteProductImage(req.params.id, req.params.imageId);
+        res.status(204).send();
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const changePrimaryProductImage = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const productImage = await productService.changePrimaryProductImage(req.params.id, req.params.imageId);
+        res.status(200).json(productImage);
+    } catch (error) {
+        next(error);
+    }
+
+};
+

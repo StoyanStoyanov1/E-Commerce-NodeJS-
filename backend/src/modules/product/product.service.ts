@@ -1,5 +1,5 @@
 import prisma from "../../prisma/client.js";
-import type { CreateProductDto, UpdateProductDto } from "./product.dto.js";
+import type {CreateProductDto, UpdateProductDto, CreateProductImage, UpdateProductImage} from "./product.dto.js";
 import { AppError } from "../../shared/errors/AppError.js";
 
 export const createProduct = async (dto: CreateProductDto, sellerId: string) => {
@@ -92,3 +92,57 @@ export const getProductById = async (productId: string) => {
     if (!product) throw new AppError("Product not found", 404);
     return product;
 };
+
+export const addProductImage = async (productId: string, dto: CreateProductImage) => {
+    const product = await prisma.product.findUnique({ where: { id: productId } });
+    if (!product) throw new AppError("Product not found", 404);
+
+    if (dto.isPrimary) {
+        await prisma.productImage.updateMany({
+            where: {productId, isPrimary: true},
+            data: {isPrimary: false}
+        })
+    }
+
+    const hasImages = await prisma.productImage.findFirst({where: {productId}});
+
+    return prisma.productImage.create({
+        data: {
+            productId,
+            url: dto.url,
+            isPrimary: !hasImages ? true : dto.isPrimary,
+        }
+    })
+}
+
+export const deleteProductImage = async (productId: string, imageId: string) => {
+    const image = await prisma.productImage.findUnique({ where: { id: productId } });
+
+    if (!image) throw new AppError("Image not found", 404);
+    if (image.productId !== productId) throw new AppError("Forbidden", 404);
+    if (image.isPrimary) throw new AppError("Cannot delete primary image", 404);
+
+    await prisma.productImage.delete({where: {id: productId}});
+}
+
+export const changePrimaryProductImage = async (productId: string, imageId: string) => {
+    const product = await prisma.product.findUnique({ where: { id: productId } });
+
+    if (!product) throw new AppError("Product not found", 404);
+    const productImage = await prisma.productImage.findUnique({ where: { id: imageId } });
+
+    if (!productImage) throw new AppError("Image not found", 404);
+    if (productImage.productId !== productId) throw new AppError("Forbidden", 404);
+    if (productImage.isPrimary) return;
+
+    await prisma.productImage.updateMany({
+        where: {productId, isPrimary: true},
+        data: {isPrimary: false}
+    });
+
+    await prisma.productImage.update({
+        where: {id: imageId},
+        data: {isPrimary: true},
+    });
+
+}
