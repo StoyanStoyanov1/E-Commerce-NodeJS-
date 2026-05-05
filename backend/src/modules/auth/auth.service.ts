@@ -107,6 +107,10 @@ export const register = async (dto: RegisterDto) => {
                     birthDate: new Date(dto.birthDate),
                 },
             },
+            cart: {
+                create: {}
+            }
+
         },
     });
 
