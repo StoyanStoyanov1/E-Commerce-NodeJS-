@@ -31,7 +31,7 @@ export const getCart = async (userId: string) => {
 };
 
 export const addCartItem = async (cartId: string, dto: AddCartItemDTO) => {
-    await prisma.cartItem.upsert({
+    return prisma.cartItem.upsert({
         where: {
             cartId_productId: {
                 cartId: cartId,
@@ -49,12 +49,14 @@ export const addCartItem = async (cartId: string, dto: AddCartItemDTO) => {
     });
 }
 
-export const updateCartItem = async (cartItemId: string, dto: UpdateCartItemDTO) => {
+export const updateCartItem = async (userId: string, cartItemId: string, dto: UpdateCartItemDTO) => {
     const cartItem = await prisma.cartItem.findUnique({
         where: { id: cartItemId },
+        include: {cart: true}
     });
 
-    if (!cartItem) throw new AppError("No found cart item", 409);
+    if (!cartItem) throw new AppError("No found cart item", 404);
+    if (cartItem.cart.userId !== userId) throw new AppError("Forbidden", 403);
 
     return prisma.cartItem.update({
         where: {id: cartItemId},
@@ -64,11 +66,19 @@ export const updateCartItem = async (cartItemId: string, dto: UpdateCartItemDTO)
 
 };
 
-export const deleteCartItem = async (cartItemId: string) => {
+export const deleteCartItem = async (userId: string, cartItemId: string) => {
+    const cartItem = await prisma.cartItem.findUnique({
+        where: { id: cartItemId },
+        include: { cart: true },
+    });
+
+    if (!cartItem) throw new AppError("Cart item not found", 404);
+    if (cartItem.cart.userId !== userId) throw new AppError("Forbidden", 403);
+
     await prisma.cartItem.delete({
         where: { id: cartItemId },
     });
-}
+};
 
 export const clearCart = async (cartItemId: string) => {
     await prisma.cartItem.deleteMany({
