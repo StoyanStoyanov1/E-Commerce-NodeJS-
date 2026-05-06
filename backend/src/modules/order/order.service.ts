@@ -63,3 +63,21 @@ export const createOrder = async (userId: string, dto: OrderCreate) => {
     });
 };
 
+export const getOrders = async (userId: string) => {
+    return prisma.order.findMany({
+        where: { userId },
+        include: {orderItems: true},
+    });
+};
+
+export const getOrderById = async (userId: string, orderId: string) => {
+    const order = await prisma.order.findUnique({
+        where: { id: orderId },
+        include: {orderItems: true},
+    });
+
+    if (!order) throw new AppError("Order not found!", 400);
+    if (order.userId !== userId) throw new AppError("Forbidden!", 403);
+
+    return order;
+}
