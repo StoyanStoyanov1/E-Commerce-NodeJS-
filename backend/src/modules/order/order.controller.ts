@@ -26,6 +26,15 @@ export const getOrderById = async (req: Request, res: Response, next: NextFuncti
     } catch (error) {
         next(error);
     }
+};
+
+export const updateOrderStatus = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const order = await OrderService.updateOrderStatus(req.params.orderId, req.body.status);
+        res.status(200).json(order);
+    } catch (error) {
+        next(error);
+    }
 }
 
 

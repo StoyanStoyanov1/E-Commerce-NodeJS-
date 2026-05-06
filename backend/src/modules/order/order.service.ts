@@ -1,6 +1,7 @@
 import prisma from "../../prisma/client.js";
-import type {OrderCreate} from "./order.dto.js";
+import type {OrderCreate, OrderUpdate} from "./order.dto.js";
 import {AppError} from "../../shared/errors/AppError.js";
+import type {OrderStatus} from "@prisma/client";
 
 export const createOrder = async (userId: string, dto: OrderCreate) => {
     const cart = await prisma.cart.findUnique({
@@ -80,4 +81,18 @@ export const getOrderById = async (userId: string, orderId: string) => {
     if (order.userId !== userId) throw new AppError("Forbidden!", 403);
 
     return order;
+};
+
+export const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
+    const order = await prisma.order.findUnique({where: { id: orderId},});
+
+    if (!order) throw new AppError("Order not found!", 404);
+
+    if (order.status === status) throw new AppError(`Order is already in ${status} status`, 400);
+
+    return prisma.order.update({
+        where: { id: orderId },
+        data: { status },
+    });
+
 }
