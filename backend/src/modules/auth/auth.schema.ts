@@ -19,7 +19,7 @@ export const RegisterSchema = z.object({
 
 export const LoginSchema = z.object({
     email: z.string().email(),
-    password: validatePassword
+    password: z.string(),
 });
 
 export const ForgotPasswordSchema = z.object({
