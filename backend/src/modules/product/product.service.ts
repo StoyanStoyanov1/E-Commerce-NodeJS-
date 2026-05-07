@@ -1,6 +1,8 @@
 import prisma from "../../prisma/client.js";
-import type {CreateProductDto, UpdateProductDto, CreateProductImage, UpdateProductImage} from "./product.dto.js";
+import type {CreateProductDto, UpdateProductDto, CreateProductImage} from "./product.dto.js";
 import { AppError } from "../../shared/errors/AppError.js";
+import type {PaginatedResult} from "../../shared/pagination/pagination.js";
+import {paginate} from "../../shared/pagination/pagination.js"
 
 export const createProduct = async (dto: CreateProductDto, sellerId: string) => {
     const categories = await prisma.category.findMany({
@@ -74,17 +76,30 @@ export const updateProductCategory = async (productId: string, categoryIds: stri
     });
 };
 
-export const getProducts = async () => {
-    return prisma.product.findMany({
-        include: {
-            categories: {
-                include: {
-                    category: true,
+export const getProducts = async (page: number, limit: number) => {
+    const { take, skip } = paginate(page, limit);
+
+    const [data, total] = await Promise.all([
+        prisma.product.findMany({
+            take,
+            skip,
+            include: {
+                categories: {
+                    include: { category: true },
                 },
+                images: true,
             },
-            images: true,
-        },
-    });
+        }),
+        prisma.product.count(),
+    ]);
+
+    return {
+        data,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+    };
 };
 
 export const getProductById = async (productId: string) => {
