@@ -31,7 +31,9 @@ export const deleteCategory = async (req: Request, res: Response, next: NextFunc
 
 export const getCategories = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const result = await categoryService.getCategories();
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const result = await categoryService.getCategories(page, limit);
         res.status(200).json(result);
     } catch (error) {
         next(error);

@@ -2,6 +2,7 @@ import prisma from "../../prisma/client.js";
 import type {OrderCreate, OrderUpdate} from "./order.dto.js";
 import {AppError} from "../../shared/errors/AppError.js";
 import type {OrderStatus} from "@prisma/client";
+import {paginate} from "../../shared/pagination/pagination.js";
 
 export const createOrder = async (userId: string, dto: OrderCreate) => {
     const cart = await prisma.cart.findUnique({
@@ -64,11 +65,26 @@ export const createOrder = async (userId: string, dto: OrderCreate) => {
     });
 };
 
-export const getOrders = async (userId: string) => {
-    return prisma.order.findMany({
-        where: { userId },
-        include: {orderItems: true},
-    });
+export const getOrders = async (userId: string, page: number, limit: number) => {
+    const { take, skip } = paginate(page, limit);
+
+    const [data, total] = await Promise.all([
+        prisma.order.findMany({
+            where: { userId },
+            include: {orderItems: true},
+            take,
+            skip,
+        }),
+        prisma.order.count({ where: { userId } }),
+    ]);
+
+    return {
+        data,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+    }
 };
 
 export const getOrderById = async (userId: string, orderId: string) => {

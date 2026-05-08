@@ -1,6 +1,7 @@
 import prisma from "../../prisma/client.js";
 import {AppError} from "../../shared/errors/AppError.js";
 import type {UpdateCategoryDto, CreateCategoryDto} from "./category.dto.js";
+import {paginate} from "../../shared/pagination/pagination.js";
 
 export const createCategory = async (dto: CreateCategoryDto) => {
     const isExist = await prisma.category.findFirst({
@@ -65,8 +66,21 @@ export const deleteCategory = async (categoryId: string) => {
 
 };
 
-export const getCategories = async () => {
-    return prisma.category.findMany();
+export const getCategories = async (page: number, limit: number) => {
+    const { take, skip } =  paginate(page, limit);
+
+    const [data, total] = await Promise.all([
+        prisma.category.findMany({take, skip}),
+        prisma.category.count(),
+    ])
+
+    return {
+        data,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+    };
 };
 
 export const getCategoryById = async (categoryId: string) => {

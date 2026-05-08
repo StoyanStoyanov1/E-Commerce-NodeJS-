@@ -12,7 +12,9 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
 
 export const getOrders = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const orders = await OrderService.getOrders(req.user!.userId);
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const orders = await OrderService.getOrders(req.user!.userId, page, limit);
         res.status(200).json(orders);
     } catch (error) {
         next(error);
