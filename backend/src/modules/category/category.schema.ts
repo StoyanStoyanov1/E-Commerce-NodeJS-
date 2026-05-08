@@ -12,11 +12,3 @@ export const UpdateCategorySchema = z.object({
     parentId: z.string().optional(),
 })
 export type UpdateCategoryDto = z.infer<typeof UpdateCategorySchema>;
-
-export type GetCategoriesResult = {
-    data: Category[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-}

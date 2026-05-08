@@ -1,7 +1,7 @@
 import prisma from "../../prisma/client.js";
 import {AppError} from "../../shared/errors/AppError.js";
-import type {UpdateCategoryDto, CreateCategoryDto, GetCategoriesResult} from "./category.schema.js";
-import {paginate} from "../../shared/pagination/pagination.js";
+import type {UpdateCategoryDto, CreateCategoryDto} from "./category.schema.js";
+import {paginate, type PaginationDto} from "../../shared/pagination/pagination.js";
 import type {Category} from "@prisma/client";
 
 export const createCategory = async (dto: CreateCategoryDto): Promise<Category> => {
@@ -67,7 +67,7 @@ export const deleteCategory = async (categoryId: string): Promise<void> => {
 
 };
 
-export const getCategories = async (page: number, limit: number): Promise<GetCategoriesResult> => {
+export const getCategories = async (page: number, limit: number): Promise<PaginationDto<Category>> => {
     const { take, skip } =  paginate(page, limit);
 
     const [data, total] = await Promise.all([
