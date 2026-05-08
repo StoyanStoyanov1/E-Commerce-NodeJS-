@@ -1,9 +1,10 @@
 import prisma from "../../prisma/client.js";
-import type {AddCartItemDTO, UpdateCartItemDTO} from "./cart.dto.js";
+import type {AddCartItemDTO, UpdateCartItemDTO} from "./cart.schema.js";
 import {AppError} from "../../shared/errors/AppError.js";
+import type {Cart} from "@prisma/client"
 
-export const getCart = async (userId: string) => {
-    const cart = await prisma.cart.findUnique({
+export const getCart = async (userId: string): Promise<Cart> => {
+    const cart: Promise<Cart> = await prisma.cart.findUnique({
         where: { userId },
         include: {
             cartItems: {
@@ -30,7 +31,7 @@ export const getCart = async (userId: string) => {
     return cart;
 };
 
-export const addCartItem = async (cartId: string, dto: AddCartItemDTO) => {
+export const addCartItem = async (cartId: string, dto: AddCartItemDTO): Promise<Cart> => {
     return prisma.cartItem.upsert({
         where: {
             cartId_productId: {
@@ -49,8 +50,8 @@ export const addCartItem = async (cartId: string, dto: AddCartItemDTO) => {
     });
 }
 
-export const updateCartItem = async (userId: string, cartItemId: string, dto: UpdateCartItemDTO) => {
-    const cartItem = await prisma.cartItem.findUnique({
+export const updateCartItem = async (userId: string, cartItemId: string, dto: UpdateCartItemDTO): Promise<UpdateCartItemDTO> => {
+    const cartItem: Promise<Cart> = await prisma.cartItem.findUnique({
         where: { id: cartItemId },
         include: {cart: true}
     });
@@ -66,8 +67,8 @@ export const updateCartItem = async (userId: string, cartItemId: string, dto: Up
 
 };
 
-export const deleteCartItem = async (userId: string, cartItemId: string) => {
-    const cartItem = await prisma.cartItem.findUnique({
+export const deleteCartItem = async (userId: string, cartItemId: string): Promise<void> => {
+    const cartItem: Promise<Cart> = await prisma.cartItem.findUnique({
         where: { id: cartItemId },
         include: { cart: true },
     });
@@ -80,7 +81,7 @@ export const deleteCartItem = async (userId: string, cartItemId: string) => {
     });
 };
 
-export const clearCart = async (cartItemId: string) => {
+export const clearCart = async (cartItemId: string): Promise<void> => {
     await prisma.cartItem.deleteMany({
         where: { cartId: cartItemId },
     });

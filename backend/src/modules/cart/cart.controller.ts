@@ -1,20 +1,21 @@
 import type {NextFunction, Request, Response} from "express";
-import type {UpdateCartItemDTO, AddCartItemDTO} from "./cart.dto.js";
+import type {UpdateCartItemDTO, AddCartItemDTO} from "./cart.schema.js";
 import * as cartService from "./cart.service.js";
+import type {Cart} from "@prisma/client"
 
-export const getCart = async (req: Request, res: Response, next: NextFunction) => {
+export const getCart = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const userId = req.user!.userId;
-        const cart = await cartService.getCart(userId);
+        const userId: string = req.user!.userId;
+        const cart: Promise<Cart> = await cartService.getCart(userId);
         res.status(200).json(cart);
     } catch (error) {
         next(error);
     }
 };
 
-export const addCartItem = async (req: Request, res: Response, next: NextFunction) => {
+export const addCartItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const cart = await cartService.getCart(req.user!.userId);
+        const cart: Promise<Cart> = await cartService.getCart(req.user!.userId);
         await cartService.addCartItem(cart.id, req.body as AddCartItemDTO);
         res.status(201).json(cart);
     } catch (error) {
@@ -22,27 +23,33 @@ export const addCartItem = async (req: Request, res: Response, next: NextFunctio
     }
 };
 
-export const updateCartItem = async (req: Request, res: Response, next: NextFunction) => {
+export const updateCartItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const updatedCartItems = await cartService.updateCartItem(req.user!.userId, req.params.itemId, req.body as UpdateCartItemDTO);
+        const userId: string = req.user!.userId;
+        const itemId = req.params.itemId;
+        const body: UpdateCartItemDTO = req.body as UpdateCartItemDTO;
+
+        const updatedCartItems = await cartService.updateCartItem(userId, itemId, body);
         res.status(200).json(updatedCartItems);
     } catch (error) {
         next(error);
     }
 };
 
-export const deleteCartItem = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteCartItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        await cartService.deleteCartItem(req.user!.userId, req.params.itemId);
+        const userId: string = req.user!.userId;
+        const itemId = req.params.itemId;
+        await cartService.deleteCartItem(userId, itemId);
         res.status(204).send();
     } catch (error) {
         next(error);
     }
 };
 
-export const clearCart = async (req: Request, res: Response, next: NextFunction) => {
+export const clearCart = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const cart = await cartService.getCart(req.user!.userId);
+        const cart: Promise<Cart> = await cartService.getCart(req.user!.userId);
         await cartService.clearCart(cart.id);
         res.status(204).send();
     } catch (error) {
