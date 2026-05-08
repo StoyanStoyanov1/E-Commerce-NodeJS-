@@ -1,8 +1,8 @@
 import prisma from "../../prisma/client.js";
-import type {CreateProductDto, UpdateProductDto, CreateProductImage} from "./product.dto.js";
+import type {CreateProductDto, UpdateProductDto, CreateProductImage, ProductFilters} from "./product.dto.js";
 import { AppError } from "../../shared/errors/AppError.js";
-import type {PaginatedResult} from "../../shared/pagination/pagination.js";
 import {paginate} from "../../shared/pagination/pagination.js"
+import productFilter from "../../shared/filters/productFilter.js";
 
 export const createProduct = async (dto: CreateProductDto, sellerId: string) => {
     const categories = await prisma.category.findMany({
@@ -76,11 +76,17 @@ export const updateProductCategory = async (productId: string, categoryIds: stri
     });
 };
 
-export const getProducts = async (page: number, limit: number) => {
+export const getProducts = async (page: number, limit: number, filters: ProductFilters) => {
     const { take, skip } = paginate(page, limit);
+
+    const where: ProductFilters = productFilter(filters);
+
+    const orderBy = {[filters.sortBy || "createdAt"]: filters.sortOrder || "desc"};
 
     const [data, total] = await Promise.all([
         prisma.product.findMany({
+            where,
+            orderBy,
             take,
             skip,
             include: {
@@ -90,7 +96,7 @@ export const getProducts = async (page: number, limit: number) => {
                 images: true,
             },
         }),
-        prisma.product.count(),
+        prisma.product.count({ where }),
     ]);
 
     return {

@@ -17,3 +17,13 @@ export interface CreateProductImage {
     url: string;
     isPrimary: boolean;
 }
+
+export interface ProductFilters {
+    search?: string;
+    categoryId?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    inStock?: boolean;
+    sortBy?: "price" | "createdAt";
+    sortOrder?: "asc" | "desc";
+}
