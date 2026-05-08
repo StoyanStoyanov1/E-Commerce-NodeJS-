@@ -1,46 +1,53 @@
 import type { NextFunction, Request, Response } from 'express';
 import * as authService from './auth.service.js';
-import type {ChangePasswordDto, LoginDto, RefreshTokenDto, RegisterDto, ForgotPasswordDto, ResetPasswordDto} from "./auth.dto.js";
+import type {ChangePasswordDto, LoginDto, RefreshTokenDto, RegisterDto, ForgotPasswordDto, ResetPasswordDto} from "./auth.schema.js";
 
-export const register = async (req: Request, res: Response, next: NextFunction) => {
+export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const result = await authService.register(req.body as RegisterDto);
+        const body: RegisterDto = req.body;
+
+        const result: object = await authService.register(body);
         res.status(201).json(result);
     } catch (error) {
         next(error);
     }
 };
 
-export const login = async (req: Request, res: Response, next: NextFunction) => {
+export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const result = await authService.login(req.body as LoginDto);
+        const body: LoginDto = req.body;
+        const result: object = await authService.login(body);
         res.status(200).json(result);
     } catch (error) {
         next(error); 
     }
 };
 
-export const refresh = async (req: Request, res: Response, next: NextFunction) => {
+export const refresh = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        await authService.refresh(req.body as RefreshTokenDto);
+        const body: RegisterDto = req.body;
+        await authService.refresh(body);
         res.status(200).json(res);
     } catch (error) {
         next(error);
     }
 };
 
-export const logout = async (req: Request, res: Response, next: NextFunction) => {
+export const logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        await authService.logout(req.body as RefreshTokenDto);
+        const body: RefreshTokenDto = req.body;
+        await authService.logout(body);
         res.status(204).send();
     } catch (error) {
         next(error);
     }
 };
 
-export const logoutAll = async (req: Request, res: Response, next: NextFunction) => {
+export const logoutAll = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { userId } = req.body as { userId: string };
+        const body: {userId: string} = req.body;
+
+        const { userId } = body;
         await authService.logoutAll(userId);
         res.status(204).send();
     } catch (error) {
@@ -48,16 +55,19 @@ export const logoutAll = async (req: Request, res: Response, next: NextFunction)
     }
 };
 
-export const changePassword = async (req: Request, res: Response, next: NextFunction) => {
+export const changePassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        await authService.changePassword(req.user!.userId, req.body as ChangePasswordDto)
+        const userId: string = req.user!.userId;
+        const body: ChangePasswordDto = req.body;
+
+        await authService.changePassword(userId, body);
         res.status(204).send();
     } catch (error) {
         next(error);
     }
 };
 
-export const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
+export const verifyEmail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { token } = req.query as { token : string };
         await authService.verifyEmail(token);
@@ -68,18 +78,20 @@ export const verifyEmail = async (req: Request, res: Response, next: NextFunctio
 };
 
 
-export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+export const forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        await authService.forgotPassword(req.body as ForgotPasswordDto);
+        const body: ForgotPasswordDto = req.body;
+        await authService.forgotPassword(body);
         res.status(200).json({ message: "If this email exists, a reset link has been sent" });
     } catch (error) {
         next(error);
     }
 };
 
-export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+export const resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        await authService.resetPassword(req.body as ResetPasswordDto);
+        const body: ResetPasswordDto = req.body;
+        await authService.resetPassword(body);
         res.status(200).json({ message: "Password reset successfully" });
     } catch (error) {
         next(error);

@@ -1,4 +1,4 @@
-import {ProductFilters} from "../../modules/product/product.dto.js";
+import type {ProductFilters} from "../../modules/product/product.dto.js";
 
 export default function productFilter(filters: ProductFilters ) {
     const where : ProductFilters = {};
