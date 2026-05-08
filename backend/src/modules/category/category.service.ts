@@ -1,17 +1,18 @@
 import prisma from "../../prisma/client.js";
 import {AppError} from "../../shared/errors/AppError.js";
-import type {UpdateCategoryDto, CreateCategoryDto} from "./category.dto.js";
+import type {UpdateCategoryDto, CreateCategoryDto, GetCategoriesResult} from "./category.schema.js";
 import {paginate} from "../../shared/pagination/pagination.js";
+import type {Category} from "@prisma/client";
 
-export const createCategory = async (dto: CreateCategoryDto) => {
-    const isExist = await prisma.category.findFirst({
+export const createCategory = async (dto: CreateCategoryDto): Promise<Category> => {
+    const isExist: Promise<Category> = await prisma.category.findFirst({
         where: {name: dto.name},
     });
 
     if (isExist) throw new AppError("Category with this name already exists", 400);
 
     if (dto.parentId) {
-        const parent = await prisma.category.findUnique({
+        const parent: Promise<Category> = await prisma.category.findUnique({
             where: {id: dto.parentId},
         });
         if (!parent) throw new AppError("Parent category not found", 404);
@@ -26,14 +27,14 @@ export const createCategory = async (dto: CreateCategoryDto) => {
 
 }
 
-export const updateCategory = async (categoryId: string, dto: UpdateCategoryDto) => {
-    const category = await prisma.category.findUnique({where: {id: categoryId}});
+export const updateCategory = async (categoryId: string, dto: UpdateCategoryDto): Promise<Category> => {
+    const category: Promise<Category> = await prisma.category.findUnique({where: {id: categoryId}});
 
     if (!category) throw new AppError("Category not found", 404);
     if (dto.parentId) {
         if (dto.parentId === categoryId) throw new AppError("Category cannot be its own parent", 400);
 
-        const parent = await prisma.category.findUnique({
+        const parent: Promise<Category> = await prisma.category.findUnique({
             where: {id: dto.parentId},
         });
         if (!parent) throw new AppError("Parent category not found", 404);
@@ -52,8 +53,8 @@ export const updateCategory = async (categoryId: string, dto: UpdateCategoryDto)
     });
 };
 
-export const deleteCategory = async (categoryId: string) => {
-    const category = await prisma.category.findUnique({where: {id: categoryId}});
+export const deleteCategory = async (categoryId: string): Promise<void> => {
+    const category: Promise<Category> = await prisma.category.findUnique({where: {id: categoryId}});
 
     if (!category) throw new AppError("Category not found", 404);
 
@@ -66,7 +67,7 @@ export const deleteCategory = async (categoryId: string) => {
 
 };
 
-export const getCategories = async (page: number, limit: number) => {
+export const getCategories = async (page: number, limit: number): Promise<GetCategoriesResult> => {
     const { take, skip } =  paginate(page, limit);
 
     const [data, total] = await Promise.all([
@@ -83,15 +84,15 @@ export const getCategories = async (page: number, limit: number) => {
     };
 };
 
-export const getCategoryById = async (categoryId: string) => {
-    const category = await prisma.category.findUnique({where: {id: categoryId}});
+export const getCategoryById = async (categoryId: string): Promise<Category> => {
+    const category: Promise<Category> = await prisma.category.findUnique({where: {id: categoryId}});
     if (!category) throw new AppError("Category not found", 404);
     return category;
 };
 
 
-export const getCategoryByName = async (name: string) => {
-    const category = await prisma.category.findFirst({where: {name: name}});
+export const getCategoryByName = async (name: string): Promise<Category> => {
+    const category: Promise<Category> = await prisma.category.findFirst({where: {name: name}});
     if (!category) throw new AppError("Category not found", 404);
     return category;
 }

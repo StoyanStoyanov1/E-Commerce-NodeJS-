@@ -1,26 +1,29 @@
 import type { NextFunction, Request, Response } from "express";
 import * as categoryService from "./category.service.js";
-import type {CreateCategoryDto, UpdateCategoryDto} from "./category.dto.js";
+import type {CreateCategoryDto, UpdateCategoryDto} from "category.schema.js";
 
-export const createCategory = async (req: Request, res: Response, next: NextFunction) => {
+export const createCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const result = await categoryService.createCategory(req.body as CreateCategoryDto);
+        const body: CreateCategoryDto = req.body;
+        const result = await categoryService.createCategory(body);
         res.status(201).json(result);
     } catch (error) {
         next(error);
     }
 };
 
-export const updateCategory = async (req: Request, res: Response, next: NextFunction) => {
+export const updateCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const result = await categoryService.updateCategory(req.params.id, req.body as UpdateCategoryDto);
+        const categoryId = req.params.id;
+        const body: UpdateCategoryDto = req.body;
+        const result = await categoryService.updateCategory(categoryId, body);
         res.status(200).json(result);
     } catch (error) {
         next(error);
     }
 };
 
-export const deleteCategory = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         await  categoryService.deleteCategory(req.params.id);
         res.status(204).send();
@@ -29,10 +32,10 @@ export const deleteCategory = async (req: Request, res: Response, next: NextFunc
     }
 };
 
-export const getCategories = async (req: Request, res: Response, next: NextFunction) => {
+export const getCategories = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 10;
+        const page: number = Number(req.query.page) || 1;
+        const limit: number = Number(req.query.limit) || 10;
         const result = await categoryService.getCategories(page, limit);
         res.status(200).json(result);
     } catch (error) {
@@ -40,7 +43,7 @@ export const getCategories = async (req: Request, res: Response, next: NextFunct
     }
 };
 
-export const getCategoryById = async (req: Request, res: Response, next: NextFunction) => {
+export const getCategoryById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const result = await categoryService.getCategoryById(req.params.id);
         res.status(200).json(result);
@@ -49,7 +52,7 @@ export const getCategoryById = async (req: Request, res: Response, next: NextFun
     }
 };
 
-export const getCategoryByName = async (req: Request, res: Response, next: NextFunction) => {
+export const getCategoryByName = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const result = await categoryService.getCategoryByName(req.params.name);
         res.status(200).json(result);
