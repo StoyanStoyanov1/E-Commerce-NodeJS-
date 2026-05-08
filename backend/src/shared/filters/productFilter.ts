@@ -1,7 +1,15 @@
-import type {ProductFilters} from "../../modules/product/product.dto.js";
+export interface ProductFiltersDto {
+    search?: string;
+    categoryId?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    inStock?: boolean;
+    sortBy?: "price" | "createdAt";
+    sortOrder?: "asc" | "desc";
+}
 
-export default function productFilter(filters: ProductFilters ) {
-    const where : ProductFilters = {};
+export function productFilter(filters: ProductFiltersDto ) {
+    const where : ProductFiltersDto = {};
 
     if (filters.search) where.name = {contains: filters.search, mode: "insensitive"};
 

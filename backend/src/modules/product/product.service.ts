@@ -1,10 +1,11 @@
 import prisma from "../../prisma/client.js";
-import type {CreateProductDto, UpdateProductDto, CreateProductImage, ProductFilters} from "./product.dto.js";
+import type {CreateProductDto, UpdateProductDto, CreateProductImage} from "./product.schema.js";
 import { AppError } from "../../shared/errors/AppError.js";
-import {paginate} from "../../shared/pagination/pagination.js"
-import productFilter from "../../shared/filters/productFilter.js";
+import {paginate, type PaginationDto} from "../../shared/pagination/pagination.js"
+import {productFilter, type ProductFiltersDto} from "../../shared/filters/productFilter.js";
+import type {Product, ProductImage} from "@prisma/client";
 
-export const createProduct = async (dto: CreateProductDto, sellerId: string) => {
+export const createProduct = async (dto: CreateProductDto, sellerId: string): Promise<Product> => {
     const categories = await prisma.category.findMany({
         where: { id: { in: dto.categoryIds } },
     });
@@ -33,8 +34,8 @@ export const createProduct = async (dto: CreateProductDto, sellerId: string) => 
     });
 };
 
-export const updateProduct = async (productId: string, dto: UpdateProductDto) => {
-    const product = await prisma.product.findUnique({ where: { id: productId } });
+export const updateProduct = async (productId: string, dto: UpdateProductDto): Promise<Product> => {
+    const product: Promise<Product> = await prisma.product.findUnique({ where: { id: productId } });
 
     if (!product) throw new AppError("Product not found", 404);
 
@@ -49,16 +50,16 @@ export const updateProduct = async (productId: string, dto: UpdateProductDto) =>
     });
 };
 
-export const deleteProduct = async (productId: string) => {
-    const product = await prisma.product.findUnique({ where: { id: productId } });
+export const deleteProduct = async (productId: string): Promise<void> => {
+    const product: Promise<Product> = await prisma.product.findUnique({ where: { id: productId } });
 
     if (!product) throw new AppError("Product not found", 404);
 
     await prisma.product.delete({ where: { id: productId } });
 };
 
-export const updateProductCategory = async (productId: string, categoryIds: string[]) => {
-    const product = await prisma.product.findUnique({ where: { id: productId } });
+export const updateProductCategory = async (productId: string, categoryIds: string[]): Promise<Product> => {
+    const product: Promise<Product> = await prisma.product.findUnique({ where: { id: productId } });
     if (!product) throw new AppError("Product not found", 404);
 
     const categories = await prisma.category.findMany({
@@ -76,10 +77,10 @@ export const updateProductCategory = async (productId: string, categoryIds: stri
     });
 };
 
-export const getProducts = async (page: number, limit: number, filters: ProductFilters) => {
+export const getProducts = async (page: number, limit: number, filters: ProductFiltersDto): Promise<PaginationDto<Product>> => {
     const { take, skip } = paginate(page, limit);
 
-    const where: ProductFilters = productFilter(filters);
+    const where: ProductFiltersDto = productFilter(filters);
 
     const orderBy = {[filters.sortBy || "createdAt"]: filters.sortOrder || "desc"};
 
@@ -108,14 +109,14 @@ export const getProducts = async (page: number, limit: number, filters: ProductF
     };
 };
 
-export const getProductById = async (productId: string) => {
-    const product = await prisma.product.findUnique({ where: { id: productId } });
+export const getProductById = async (productId: string): Promise<Product> => {
+    const product: Promise<Product> = await prisma.product.findUnique({ where: { id: productId } });
     if (!product) throw new AppError("Product not found", 404);
     return product;
 };
 
-export const addProductImage = async (productId: string, dto: CreateProductImage) => {
-    const product = await prisma.product.findUnique({ where: { id: productId } });
+export const addProductImage = async (productId: string, dto: CreateProductImage): Promise<ProductImage> => {
+    const product: Promise<Product> = await prisma.product.findUnique({ where: { id: productId } });
     if (!product) throw new AppError("Product not found", 404);
 
     if (dto.isPrimary) {
@@ -125,7 +126,7 @@ export const addProductImage = async (productId: string, dto: CreateProductImage
         })
     }
 
-    const hasImages = await prisma.productImage.findFirst({where: {productId}});
+    const hasImages: Promise<ProductImage> = await prisma.productImage.findFirst({where: {productId}});
 
     return prisma.productImage.create({
         data: {
@@ -136,8 +137,8 @@ export const addProductImage = async (productId: string, dto: CreateProductImage
     })
 }
 
-export const deleteProductImage = async (productId: string, imageId: string) => {
-    const image = await prisma.productImage.findUnique({ where: { id: productId } });
+export const deleteProductImage = async (productId: string, imageId: string): Promise<void> => {
+    const image: Promise<ProductImage> = await prisma.productImage.findUnique({ where: { id: productId } });
 
     if (!image) throw new AppError("Image not found", 404);
     if (image.productId !== productId) throw new AppError("Forbidden", 404);
@@ -146,11 +147,11 @@ export const deleteProductImage = async (productId: string, imageId: string) => 
     await prisma.productImage.delete({where: {id: productId}});
 }
 
-export const changePrimaryProductImage = async (productId: string, imageId: string) => {
-    const product = await prisma.product.findUnique({ where: { id: productId } });
+export const changePrimaryProductImage = async (productId: string, imageId: string): Promise<void> => {
+    const product: Promise<Product> = await prisma.product.findUnique({ where: { id: productId } });
 
     if (!product) throw new AppError("Product not found", 404);
-    const productImage = await prisma.productImage.findUnique({ where: { id: imageId } });
+    const productImage: Promise<ProductImage> = await prisma.productImage.findUnique({ where: { id: imageId } });
 
     if (!productImage) throw new AppError("Image not found", 404);
     if (productImage.productId !== productId) throw new AppError("Forbidden", 404);
