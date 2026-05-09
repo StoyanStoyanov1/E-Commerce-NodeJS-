@@ -25,9 +25,9 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
 
 export const refresh = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const body: RegisterDto = req.body;
-        await authService.refresh(body);
-        res.status(200).json(res);
+        const body: RefreshTokenDto = req.body;
+        const result = await authService.refresh(body);
+        res.status(200).json(result);
     } catch (error) {
         next(error);
     }
@@ -47,7 +47,7 @@ export const logoutAll = async (req: Request, res: Response, next: NextFunction)
     try {
         const body: {userId: string} = req.body;
 
-        const { userId } = body;
+        const userId: string = req.user!.userId;
         await authService.logoutAll(userId);
         res.status(204).send();
     } catch (error) {

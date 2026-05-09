@@ -2,10 +2,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import prisma from "../../prisma/client.js";
-import type { RegisterDto, LoginDto, RefreshTokenDto, ChangePasswordDto, ResetPasswordDto, ForgotPasswordDto, RegisterResult, ResetResultDto} from "./auth.schema.js";
+import type { RegisterDto, LoginDto, RefreshTokenDto, ChangePasswordDto, ResetPasswordDto, ForgotPasswordDto} from "./auth.schema.js";
 import { AppError } from "../../shared/errors/AppError.js";
 import { sendPasswordResetEmail, sendVerificationEmail } from "../../shared/email/email.service.js";
-import type {RefreshToken, User, PasswordReset} from "@prisma/client";
 import logger from "../../shared/logger/logger.js"
 
 const JWT_SECRET: string = process.env.JWT_SECRET || "secret";
@@ -20,7 +19,7 @@ const generateRefreshToken = (): string => {
     return crypto.randomBytes(64).toString("hex");
 };
 
-const saveRefreshToken = async (userId: string, token: string): Promise<RefreshToken> => {
+const saveRefreshToken = async (userId: string, token: string) => {
     const expiresAt: Date = new Date();
     expiresAt.setDate(expiresAt.getDate() + REFRESH_TOKEN_EXPIRY_DAYS);
 
@@ -31,7 +30,7 @@ const saveRefreshToken = async (userId: string, token: string): Promise<RefreshT
 
 
 export const login = async (dto: LoginDto) => {
-    const user: Promise<RefreshToken>  = await prisma.user.findUnique({
+    const user  = await prisma.user.findUnique({
         where: { email: dto.email },
         include: { role: true },
     });
@@ -53,8 +52,8 @@ export const login = async (dto: LoginDto) => {
     return { accessToken, refreshToken, userId: user.id, role: user.role?.name };
 };
 
-export const logout = async (dto: RefreshTokenDto): Promise<RefreshTokenDto> => {
-    const existing: Promise<RefreshToken> = await prisma.refreshToken.findUnique({
+export const logout = async (dto: RefreshTokenDto) => {
+    const existing = await prisma.refreshToken.findUnique({
         where: { token: dto.refreshToken },
     });
 
@@ -66,15 +65,15 @@ export const logout = async (dto: RefreshTokenDto): Promise<RefreshTokenDto> => 
     });
 };
 
-export const logoutAll = async (userId: string): Promise<void> => {
+export const logoutAll = async (userId: string) => {
     await prisma.refreshToken.updateMany({
         where: { userId, isRevoked: false },
         data: { isRevoked: true },
     });
 };
 
-export const changePassword = async (userId: string, dto: ChangePasswordDto): Promise<ChangePasswordDto> => {
-    const user: Promise<User> = await prisma.user.findUnique({
+export const changePassword = async (userId: string, dto: ChangePasswordDto) => {
+    const user = await prisma.user.findUnique({
         where: {id: userId},
     })
 
@@ -91,8 +90,8 @@ export const changePassword = async (userId: string, dto: ChangePasswordDto): Pr
     })
 }
 
-export const register = async (dto: RegisterDto): Promise<RegisterResult> => {
-    const existing: Promise<User> = await prisma.user.findUnique({
+export const register = async (dto: RegisterDto) => {
+    const existing = await prisma.user.findUnique({
         where: { email: dto.email },
     });
 
@@ -100,7 +99,7 @@ export const register = async (dto: RegisterDto): Promise<RegisterResult> => {
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    const user: Promise<User> = await prisma.user.create({
+    const user = await prisma.user.create({
         data: {
             email: dto.email,
             password: hashedPassword,
@@ -135,7 +134,7 @@ export const register = async (dto: RegisterDto): Promise<RegisterResult> => {
     return { id: user.id, email: user.email };
 };
 
-export const verifyEmail = async (token: string): Promise<void> => {
+export const verifyEmail = async (token: string) => {
     const verification = await prisma.emailVerification.findUnique({
         where: { token },
     });
@@ -157,8 +156,8 @@ export const verifyEmail = async (token: string): Promise<void> => {
     logger.info("Email verified", {userId: verification.userId});
 };
 
-export const forgotPassword = async (dto: ForgotPasswordDto): Promise<void> => {
-    const user: Promise<User> = await prisma.user.findUnique({
+export const forgotPassword = async (dto: ForgotPasswordDto) => {
+    const user = await prisma.user.findUnique({
         where: { email: dto.email },
     });
 
@@ -176,8 +175,8 @@ export const forgotPassword = async (dto: ForgotPasswordDto): Promise<void> => {
     logger.info("Password reset requested", {userId: user.id, email: user.email});
 };
 
-export const resetPassword = async (dto: ResetPasswordDto): Promise<void> => {
-    const reset: Promise<PasswordReset> = await prisma.passwordReset.findUnique({
+export const resetPassword = async (dto: ResetPasswordDto) => {
+    const reset = await prisma.passwordReset.findUnique({
         where: { token: dto.token },
     });
 
@@ -201,7 +200,7 @@ export const resetPassword = async (dto: ResetPasswordDto): Promise<void> => {
     logger.info("Reset password", {userId: reset.userId});
 };
 
-export const refresh = async (dto: RefreshTokenDto): Promise<ResetResultDto> => {
+export const refresh = async (dto: RefreshTokenDto) => {
     const existing = await prisma.refreshToken.findUnique({
         where: { token: dto.refreshToken },
         include: { user: { include: { role: true } } },

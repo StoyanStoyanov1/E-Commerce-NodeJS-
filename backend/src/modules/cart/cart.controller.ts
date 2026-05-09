@@ -6,7 +6,7 @@ import type {Cart} from "@prisma/client"
 export const getCart = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId: string = req.user!.userId;
-        const cart: Promise<Cart> = await cartService.getCart(userId);
+        const cart = await cartService.getCart(userId);
         res.status(200).json(cart);
     } catch (error) {
         next(error);
@@ -15,8 +15,10 @@ export const getCart = async (req: Request, res: Response, next: NextFunction): 
 
 export const addCartItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const cart: Promise<Cart> = await cartService.getCart(req.user!.userId);
-        await cartService.addCartItem(cart.id, req.body as AddCartItemDTO);
+        const cart = await cartService.getCart(req.user!.userId);
+        const cartId: string = cart.id;
+        const body: AddCartItemDTO = req.body;
+        await cartService.addCartItem(cartId, body);
         res.status(201).json(cart);
     } catch (error) {
         next(error);
@@ -49,8 +51,10 @@ export const deleteCartItem = async (req: Request, res: Response, next: NextFunc
 
 export const clearCart = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const cart: Promise<Cart> = await cartService.getCart(req.user!.userId);
-        await cartService.clearCart(cart.id);
+        const userId: string = req.user!.userId;
+        const cart = await cartService.getCart(userId);
+        const cartId: string = cart.id;
+        await cartService.clearCart(cartId);
         res.status(204).send();
     } catch (error) {
         next(error);
