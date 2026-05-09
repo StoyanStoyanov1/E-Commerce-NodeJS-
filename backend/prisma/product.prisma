@@ -13,6 +13,9 @@ model Product {
   categories ProductCategory[]
   orderItems OrderItem[]
   cartItems  CartItem[]
+
+  @@index([sellerId])
+  @@index([name])
 }
 
 model ProductImage {
