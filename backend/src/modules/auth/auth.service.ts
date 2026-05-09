@@ -6,6 +6,7 @@ import type { RegisterDto, LoginDto, RefreshTokenDto, ChangePasswordDto, ResetPa
 import { AppError } from "../../shared/errors/AppError.js";
 import { sendPasswordResetEmail, sendVerificationEmail } from "../../shared/email/email.service.js";
 import type {RefreshToken, User, PasswordReset} from "@prisma/client";
+import logger from "../../shared/logger/logger.js"
 
 const JWT_SECRET: string = process.env.JWT_SECRET || "secret";
 const ACCESS_TOKEN_EXPIRY: string = "1d";
@@ -30,7 +31,7 @@ const saveRefreshToken = async (userId: string, token: string): Promise<RefreshT
 
 
 export const login = async (dto: LoginDto) => {
-    const user: Promise<RefreshToken> = await prisma.user.findUnique({
+    const user: Promise<RefreshToken>  = await prisma.user.findUnique({
         where: { email: dto.email },
         include: { role: true },
     });
@@ -38,11 +39,16 @@ export const login = async (dto: LoginDto) => {
     if (!user) throw new AppError("Incorrect email or password", 401);
 
     const isValid: boolean = await bcrypt.compare(dto.password, user.password);
-    if (!isValid) throw new AppError("Incorrect email or password", 401);
+    if (!isValid) {
+        logger.warn("Incorrect email or password", {email: dto.email});
+        throw new AppError("Incorrect email or password", 401);
+    }
 
     const accessToken: string = generateAccessToken(user.id, user.role?.name);
     const refreshToken: string = generateRefreshToken();
     await saveRefreshToken(user.id, refreshToken);
+
+    logger.info("User logged in", {userId: user.id});
 
     return { accessToken, refreshToken, userId: user.id, role: user.role?.name };
 };
@@ -125,6 +131,7 @@ export const register = async (dto: RegisterDto): Promise<RegisterResult> => {
 
     await sendVerificationEmail(user.email, token);
 
+    logger.info("User registered", {userId: user.id, email: user.email});
     return { id: user.id, email: user.email };
 };
 
@@ -146,6 +153,8 @@ export const verifyEmail = async (token: string): Promise<void> => {
         where: { id: verification.userId },
         data: { isAktiv: true },
     });
+
+    logger.info("Email verified", {userId: verification.userId});
 };
 
 export const forgotPassword = async (dto: ForgotPasswordDto): Promise<void> => {
@@ -164,6 +173,7 @@ export const forgotPassword = async (dto: ForgotPasswordDto): Promise<void> => {
     });
 
     await sendPasswordResetEmail(user.email, token);
+    logger.info("Password reset requested", {userId: user.id, email: user.email});
 };
 
 export const resetPassword = async (dto: ResetPasswordDto): Promise<void> => {
@@ -188,6 +198,7 @@ export const resetPassword = async (dto: ResetPasswordDto): Promise<void> => {
     });
 
     await logoutAll(reset.userId);
+    logger.info("Reset password", {userId: reset.userId});
 };
 
 export const refresh = async (dto: RefreshTokenDto): Promise<ResetResultDto> => {
