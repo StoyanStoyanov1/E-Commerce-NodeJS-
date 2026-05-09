@@ -39,7 +39,8 @@ export const updateAddress = async (req: Request, res: Response, next: NextFunct
     try {
         const userId: string = req.user!.userId;
         const body: UpdateAddressDto = req.body;
-        const result = await userService.updateAddress(userId, req.params.id, body);
+        const id: string = req.params.id as string;
+        const result = await userService.updateAddress(userId, id, body);
         res.status(200).json(result);
     } catch (error) {
         next(error);
@@ -49,7 +50,8 @@ export const updateAddress = async (req: Request, res: Response, next: NextFunct
 export const deleteAddress = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId: string = req.user!.userId;
-        await userService.deleteAddress(userId, req.params.id);
+        const id: string = req.params.id as string;
+        await userService.deleteAddress(userId, id);
         res.status(204).send();
     } catch (error) {
         next(error);
@@ -59,7 +61,8 @@ export const deleteAddress = async (req: Request, res: Response, next: NextFunct
 export const setDefaultAddress = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId: string = req.user!.userId;
-        const result = await userService.setDefaultAddress(userId, req.params.id);
+        const id: string = req.params.id as string;
+        const result = await userService.setDefaultAddress(userId, id);
         res.status(200).json(result);
     } catch (error) {
         next(error);

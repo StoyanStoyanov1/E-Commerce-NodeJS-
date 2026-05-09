@@ -14,7 +14,7 @@ export const createCategory = async (req: Request, res: Response, next: NextFunc
 
 export const updateCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const categoryId = req.params.id;
+        const categoryId = req.params.id as string;
         const body: UpdateCategoryDto = req.body;
         const result = await categoryService.updateCategory(categoryId, body);
         res.status(200).json(result);
@@ -25,7 +25,8 @@ export const updateCategory = async (req: Request, res: Response, next: NextFunc
 
 export const deleteCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        await  categoryService.deleteCategory(req.params.id);
+        const categoryId = req.params.id as string;
+        await  categoryService.deleteCategory(categoryId);
         res.status(204).send();
     } catch (error) {
         next(error);
@@ -45,7 +46,8 @@ export const getCategories = async (req: Request, res: Response, next: NextFunct
 
 export const getCategoryById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const result = await categoryService.getCategoryById(req.params.id);
+        const categoryId = req.params.id as string;
+        const result = await categoryService.getCategoryById(categoryId);
         res.status(200).json(result);
     } catch (error) {
         next(error);
@@ -54,7 +56,8 @@ export const getCategoryById = async (req: Request, res: Response, next: NextFun
 
 export const getCategoryByName = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const result = await categoryService.getCategoryByName(req.params.name);
+        const categoryName = req.params.name as string;
+        const result = await categoryService.getCategoryByName(categoryName);
         res.status(200).json(result);
     } catch (error) {
         next(error);

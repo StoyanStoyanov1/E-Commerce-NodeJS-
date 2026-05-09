@@ -18,7 +18,8 @@ export const createProduct = async(req: Request, res: Response, next: NextFuncti
 export const updateProduct = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const body: UpdateProductDto = req.body;
-        const product = await productService.updateProduct(req.params.id, body);
+        const id = req.params.id as string;
+        const product = await productService.updateProduct(id, body);
         res.status(200).json(product);
     } catch (error) {
         next(error);
@@ -27,7 +28,8 @@ export const updateProduct = async(req: Request, res: Response, next: NextFuncti
 
 export const deleteProduct = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        await productService.deleteProduct(req.params.id);
+        const id= req.params.id as string;
+        await productService.deleteProduct(id);
         res.status(204).send();
     } catch (error) {
         next(error);
@@ -37,7 +39,8 @@ export const deleteProduct = async(req: Request, res: Response, next: NextFuncti
 export const updateProductCategory = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const categoryIds: string[] = req.body.categoryIds;
-        const product = await productService.updateProductCategory(req.params.id, categoryIds);
+        const id = req.params.id as string;
+        const product = await productService.updateProductCategory(id, categoryIds);
         res.status(200).json(product);
     } catch (error) {
         next(error);
@@ -67,7 +70,8 @@ export const getProducts = async(req: Request, res: Response, next: NextFunction
 
 export const getProductById = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const product = await productService.getProductById(req.params.id);
+        const id = req.params.id as string;
+        const product = await productService.getProductById(id);
         res.status(200).json(product);
     } catch (error) {
         next(error);
@@ -77,7 +81,8 @@ export const getProductById = async(req: Request, res: Response, next: NextFunct
 export const createProductImage = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const body: CreateProductImage = req.body;
-        const image = await productService.addProductImage(req.params.id, body);
+        const id= req.params.id as string;
+        const image = await productService.addProductImage(id, body);
         res.status(201).json(image);
     } catch (error) {
         next(error);
@@ -86,7 +91,7 @@ export const createProductImage = async(req: Request, res: Response, next: NextF
 
 export const deleteProductImage = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const {id, imageId} = req.params;
+        const {id, imageId} = req.params as {id: string, imageId: string};
         await productService.deleteProductImage(id, imageId);
         res.status(204).send();
     } catch (error) {
@@ -96,7 +101,7 @@ export const deleteProductImage = async(req: Request, res: Response, next: NextF
 
 export const changePrimaryProductImage = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const {id, imageId} = req.params;
+        const {id, imageId} = req.params as {id: string, imageId: string};
         const productImage = await productService.changePrimaryProductImage(id, imageId);
         res.status(200).json(productImage);
     } catch (error) {

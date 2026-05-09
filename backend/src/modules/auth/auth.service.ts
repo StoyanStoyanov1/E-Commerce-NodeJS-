@@ -110,7 +110,7 @@ export const register = async (dto: RegisterDto) => {
                     middleName: dto.middleName,
                     lastName: dto.lastName,
                     phoneNumber: dto.phoneNumber,
-                    birthDate: new Date(dto.birthDate),
+                    birthDate: new Date(dto.birthday),
                 },
             },
             cart: {

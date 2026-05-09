@@ -28,7 +28,8 @@ export const getOrders = async (req: Request, res: Response, next: NextFunction)
 export const getOrderById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId: string = req.user!.userId;
-        const order = await OrderService.getOrderById(userId, req.params.id);
+        const orderId: string = req.params.id as string;
+        const order = await OrderService.getOrderById(userId, orderId);
         res.status(200).json(order);
     } catch (error) {
         next(error);
@@ -38,7 +39,8 @@ export const getOrderById = async (req: Request, res: Response, next: NextFuncti
 export const updateOrderStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const status = req.body.status;
-        const order = await OrderService.updateOrderStatus(req.params.orderId, status);
+        const orderId = req.params.id as string;
+        const order = await OrderService.updateOrderStatus(orderId, status);
         res.status(200).json(order);
     } catch (error) {
         next(error);
