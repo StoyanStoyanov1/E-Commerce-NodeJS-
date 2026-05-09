@@ -119,4 +119,33 @@ export const updateOrderStatus = async (orderId: string, status: OrderStatus) =>
     logger.info("Order updated", {orderId, status});
 
     return updatedOrder;
-}
+};
+
+export const cancelOrder = async (userId: string, orderId: string) => {
+    const order = await prisma.order.findUnique({
+        where: { id: orderId },
+        include: { orderItems: true },
+    });
+
+    if (!order) throw new AppError("Order not found", 404);
+    if (order.userId !== userId) throw new AppError("Forbidden", 403);
+    if (order.status !== "PENDING") throw new AppError("Only pending orders can be cancelled", 400);
+
+    return prisma.$transaction(async (tx) => {
+        for (const item of order.orderItems) {
+            await tx.product.update({
+                where: { id: item.productId },
+                data: { stock: { increment: item.quantity } },
+            });
+        }
+
+        const cancelledOrder = await tx.order.update({
+            where: { id: orderId },
+            data: { status: "CANCELLED" },
+        });
+
+        logger.info("Order cancelled", { orderId, userId });
+
+        return cancelledOrder;
+    });
+};

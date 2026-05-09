@@ -45,6 +45,17 @@ export const updateOrderStatus = async (req: Request, res: Response, next: NextF
     } catch (error) {
         next(error);
     }
+};
+
+export const cancelledOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const userId: string = req.user!.userId;
+        const orderId = req.params.id as string;
+        const order = await OrderService.cancelOrder(userId, orderId);
+        res.status(200).json(order);
+    } catch (error) {
+        next(error);
+    }
 }
 
 

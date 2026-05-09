@@ -12,4 +12,6 @@ router.get("/", authenticate, OrderController.getOrders);
 
 router.patch("/:orderId/status", authenticate, authorize("ADMIN"), OrderController.updateOrderStatus);
 
+router.patch("/:id/cancel", authenticate, OrderController.cancelledOrder);
+
 export default router;
