@@ -2,11 +2,11 @@ import prisma from "../../prisma/client.js";
 import type {OrderDto} from "./order.schema.js";
 import {AppError} from "../../shared/errors/AppError.js";
 import type {OrderStatus} from "@prisma/client";
-import {type PaginationDto, paginate} from "../../shared/pagination/pagination.js";
-import type {Order, Cart, Address} from "@prisma/client";
+import { paginate} from "../../shared/pagination/pagination.js";
+import logger from "../../shared/logger/logger.js";
 
-export const createOrder = async (userId: string, dto: OrderDto): Promise<Order> => {
-    const cart: Promise<Cart> = await prisma.cart.findUnique({
+export const createOrder = async (userId: string, dto: OrderDto) => {
+    const cart = await prisma.cart.findUnique({
         where: { userId },
         include: {
             cartItems: {
@@ -19,7 +19,7 @@ export const createOrder = async (userId: string, dto: OrderDto): Promise<Order>
 
     if (!cart || cart.cartItems.length === 0) throw new AppError("Cart is empty", 400);
 
-    const address: Promise<Address> = await prisma.address.findUnique({
+    const address = await prisma.address.findUnique({
         where: { id: dto.addressId, userId },
     });
 
@@ -31,7 +31,7 @@ export const createOrder = async (userId: string, dto: OrderDto): Promise<Order>
 
     const totalPrice: number = cart.cartItems.reduce((total, item) => total + Number(item.product.price) * item.quantity, 0);
 
-    return await prisma.$transaction(async (tx) => {
+    const createdOrder = await prisma.$transaction(async (tx) => {
         const newOrder = await tx.order.create({
             data: {
                 userId,
@@ -64,9 +64,13 @@ export const createOrder = async (userId: string, dto: OrderDto): Promise<Order>
 
         return newOrder;
     });
+
+    logger.info("Order created", {orderId: createdOrder.id, userId});
+
+    return createdOrder;
 };
 
-export const getOrders = async (userId: string, page: number, limit: number): Promise<PaginationDto<Order>> => {
+export const getOrders = async (userId: string, page: number, limit: number) => {
     const { take, skip } = paginate(page, limit);
 
     const [data, total] = await Promise.all([
@@ -88,8 +92,8 @@ export const getOrders = async (userId: string, page: number, limit: number): Pr
     }
 };
 
-export const getOrderById = async (userId: string, orderId: string): Promise<Order> => {
-    const order: Promise<Order> = await prisma.order.findUnique({
+export const getOrderById = async (userId: string, orderId: string) => {
+    const order = await prisma.order.findUnique({
         where: { id: orderId },
         include: {orderItems: true},
     });
@@ -100,16 +104,19 @@ export const getOrderById = async (userId: string, orderId: string): Promise<Ord
     return order;
 };
 
-export const updateOrderStatus = async (orderId: string, status: OrderStatus): Promise<Order> => {
-    const order: Promise<Order> = await prisma.order.findUnique({where: { id: orderId},});
+export const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
+    const order = await prisma.order.findUnique({where: { id: orderId},});
 
     if (!order) throw new AppError("Order not found!", 404);
 
     if (order.status === status) throw new AppError(`Order is already in ${status} status`, 400);
 
-    return prisma.order.update({
+    const updatedOrder = await prisma.order.update({
         where: { id: orderId },
         data: { status },
     });
 
+    logger.info("Order updated", {orderId, status});
+
+    return updatedOrder;
 }

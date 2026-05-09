@@ -1,43 +1,47 @@
 import prisma from "../../prisma/client.js";
 import { AppError } from "../../shared/errors/AppError.js";
 import type { UpdateAddressDto, CreateAddressDto, UpdateProfileDto} from "./user.schema.js";
-import type {Address, City, Product, Profile, User} from "@prisma/client";
+import logger from "../../shared/logger/logger.js";
 
-export const updateProfile = async (userId: string, dto: UpdateProfileDto): Promise<Profile> => {
-    const profile: Promise<Profile> = await prisma.profile.findUnique({
+export const updateProfile = async (userId: string, dto: UpdateProfileDto) => {
+    const profile = await prisma.profile.findUnique({
         where: {userId},
     });
 
     if (!profile) throw new AppError("Profile not found", 404);
 
-    return prisma.profile.update({
+    const updatedProfile = await prisma.profile.update({
         where: {userId},
         data: {
             middleName: dto.middleName,
             phoneNumber: dto.phoneNumber,
         }
     });
+
+    logger.info(`Updated profile for user ${userId}`);
+
+    return updatedProfile;
 };
 
-export const getAddresses = async (userId: string): Promise<Address> => {
+export const getAddresses = async (userId: string) => {
     return prisma.address.findMany({
         where: {userId},
         include: {city: {include: {country: true}}},
     });
 };
 
-export const createAddress = async (userId: string, dto: CreateAddressDto): Promise<City> => {
-    const city: Promise<City> = await prisma.city.findUnique({
+export const createAddress = async (userId: string, dto: CreateAddressDto) => {
+    const city = await prisma.city.findUnique({
         where: { id: dto.cityId },
     });
 
     if (!city) throw new AppError("City not found", 404);
 
-    const hasDefault: Promise<Address> = await prisma.address.findFirst({
+    const hasDefault = await prisma.address.findFirst({
         where: { userId, isDefault: true },
     });
 
-    return prisma.address.create({
+    const newAddress = await prisma.address.create({
         data: {
             street: dto.street,
             cityId: dto.cityId,
@@ -45,10 +49,14 @@ export const createAddress = async (userId: string, dto: CreateAddressDto): Prom
             isDefault: !hasDefault,
         },
     });
+
+    logger.info("Created new address for user", newAddress);
+
+    return newAddress;
 };
 
-export const updateAddress = async (userId: string, addressId: string, dto: UpdateAddressDto): Promise<Address> => {
-    const address: Promise<Address> = await prisma.address.findUnique({
+export const updateAddress = async (userId: string, addressId: string, dto: UpdateAddressDto) => {
+    const address = await prisma.address.findUnique({
         where: {id: addressId}
     });
 
@@ -56,21 +64,23 @@ export const updateAddress = async (userId: string, addressId: string, dto: Upda
     if (address.userId !== userId) throw new AppError("Forbidden", 403);
 
     if (dto.cityId) {
-        const city: Promise<City> = await prisma.city.findUnique({where: {id: dto.cityId}});
+        const city = await prisma.city.findUnique({where: {id: dto.cityId}});
         if (!city) throw new AppError("City not found", 404);
     }
 
-    return prisma.address.update({
+    const updatedAddress = await prisma.address.update({
         where: {id : addressId},
         data: {
             street: dto.street,
             cityId: dto.cityId,
         }
-    })
+    });
+    logger.info("Updated address for user", updatedAddress);
+    return updatedAddress;
 };
 
 export const deleteAddress = async (userId: string, addressId: string): Promise<void> => {
-    const address: Promise<Address> = await prisma.address.findUnique({
+    const address = await prisma.address.findUnique({
         where: {id: addressId}
     });
 
@@ -81,10 +91,12 @@ export const deleteAddress = async (userId: string, addressId: string): Promise<
     await prisma.address.delete({
         where: {id: addressId}
     });
+
+    logger.info("Deleted address for user", addressId);
 }
 
-export const setDefaultAddress = async (userId: string, addressId: string): Promise<Address> => {
-    const address: Promise<Address> = await prisma.address.findUnique({where: {id: addressId}});
+export const setDefaultAddress = async (userId: string, addressId: string) => {
+    const address = await prisma.address.findUnique({where: {id: addressId}});
 
     if (!address) throw new AppError("Address not found", 404);
     if (address.userId !== userId) throw new AppError("Forbidden", 403);
@@ -94,15 +106,19 @@ export const setDefaultAddress = async (userId: string, addressId: string): Prom
         data: {isDefault: false},
     });
 
-    return prisma.address.update({
+    const updatedAddress = await prisma.address.update({
         where: {id: addressId},
         data: {isDefault: true},
     })
+
+    logger.info("SetDefaultAddress for user", addressId);
+
+    return updatedAddress;
 }
 
 
-export const getMe = async (userId: number): Promise<User> => {
-    const user: Promise<User> = await prisma.user.findUnique({
+export const getMe = async (userId: string) => {
+    const user = await prisma.user.findUnique({
         where: {id: userId},
         select: {
             id: true,

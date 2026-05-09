@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import * as categoryService from "./category.service.js";
-import type {CreateCategoryDto, UpdateCategoryDto} from "category.schema.js";
+import type {CreateCategoryDto, UpdateCategoryDto} from "./category.schema.js";
 
 export const createCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {

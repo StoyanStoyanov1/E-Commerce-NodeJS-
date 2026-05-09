@@ -1,6 +1,6 @@
-import type { NextFunction, Request, Response } from "express";
+import type {NextFunction, Request, Response} from "express";
 import * as userService from "./user.service.js";
-import type { UpdateProfileDto, UpdateAddressDto, CreateAddressDto} from "./user.schema.js";
+import type {UpdateProfileDto, UpdateAddressDto, CreateAddressDto} from "./user.schema.js";
 import prisma from "../../prisma/client.js";
 
 export const updateProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -16,7 +16,8 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
 
 export const getAddresses = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const result = await userService.getAddresses();
+        const userId: string = req.user!.userId;
+        const result = await userService.getAddresses(userId);
         res.status(200).json(result);
     } catch (error) {
         next(error);
@@ -26,7 +27,7 @@ export const getAddresses = async (req: Request, res: Response, next: NextFuncti
 export const createAddress = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId: string = req.user!.userId;
-        const body: CreateAddressDto = await prisma.user.create({})
+        const body: CreateAddressDto = req.body;
         const result = await userService.createAddress(userId, body);
         res.status(201).json(result);
     } catch (error) {

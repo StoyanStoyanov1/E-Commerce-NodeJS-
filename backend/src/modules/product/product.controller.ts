@@ -2,12 +2,13 @@ import type { Request, Response, NextFunction } from 'express';
 import * as productService from "./product.service.js";
 import type {CreateProductDto, UpdateProductDto, CreateProductImage} from './product.schema.js';
 import type {ProductFiltersDto} from "../../shared/filters/productFilter.js"
-import type {Product} from "@prisma/client";
+
 
 export const createProduct = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const sellerId: string = req.user!.userId;
-        const result = await productService.createProduct(req.body as CreateProductDto, sellerId);
+        const body: CreateProductDto = req.body;
+        const result = await productService.createProduct(body, sellerId);
         res.status(201).json(result);
     } catch (error) {
         next(error);
@@ -35,7 +36,8 @@ export const deleteProduct = async(req: Request, res: Response, next: NextFuncti
 
 export const updateProductCategory = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const product = await productService.updateProductCategory(req.params.id, req.body.categoryIds);
+        const categoryIds: string[] = req.body.categoryIds;
+        const product = await productService.updateProductCategory(req.params.id, categoryIds);
         res.status(200).json(product);
     } catch (error) {
         next(error);
@@ -74,7 +76,7 @@ export const getProductById = async(req: Request, res: Response, next: NextFunct
 
 export const createProductImage = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const body: CreateProductDto = req.body;
+        const body: CreateProductImage = req.body;
         const image = await productService.addProductImage(req.params.id, body);
         res.status(201).json(image);
     } catch (error) {
