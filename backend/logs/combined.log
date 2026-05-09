@@ -6,3 +6,24 @@
 {"level":"http","message":"\u001b[0mGET /orders/fb0ee541-befd-481d-ac3e-0a7ee9728eae \u001b[32m200\u001b[0m 4.894 ms - 791\u001b[0m","timestamp":"2026-05-09 17:03:22"}
 {"level":"http","message":"\u001b[0mGET /orders \u001b[32m200\u001b[0m 13.544 ms - 847\u001b[0m","timestamp":"2026-05-09 17:03:27"}
 {"level":"http","message":"\u001b[0mGET /products?search=iPhone&minPrice=100&maxPrice=2000&inStock=true&sortBy=price&sortOrder=asc&page=1&limit=10 \u001b[32m200\u001b[0m 5.488 ms - 1380\u001b[0m","timestamp":"2026-05-09 17:03:31"}
+{"level":"info","message":"User logged in","timestamp":"2026-05-09 20:08:50","userId":"98674bc6-171f-4113-9581-2a57a2a48d46"}
+{"level":"http","message":"\u001b[0mPOST /auth/login \u001b[32m200\u001b[0m 107.983 ms - 439\u001b[0m","timestamp":"2026-05-09 20:08:50"}
+{"level":"info","message":"User logged in","timestamp":"2026-05-09 20:08:51","userId":"98674bc6-171f-4113-9581-2a57a2a48d46"}
+{"level":"http","message":"\u001b[0mPOST /auth/login \u001b[32m200\u001b[0m 65.847 ms - 439\u001b[0m","timestamp":"2026-05-09 20:08:51"}
+{"level":"info","message":"User logged in","timestamp":"2026-05-09 20:08:52","userId":"98674bc6-171f-4113-9581-2a57a2a48d46"}
+{"level":"http","message":"\u001b[0mPOST /auth/login \u001b[32m200\u001b[0m 68.521 ms - 439\u001b[0m","timestamp":"2026-05-09 20:08:52"}
+{"level":"info","message":"User logged in","timestamp":"2026-05-09 20:08:53","userId":"98674bc6-171f-4113-9581-2a57a2a48d46"}
+{"level":"http","message":"\u001b[0mPOST /auth/login \u001b[32m200\u001b[0m 71.628 ms - 439\u001b[0m","timestamp":"2026-05-09 20:08:53"}
+{"level":"info","message":"User logged in","timestamp":"2026-05-09 20:08:54","userId":"98674bc6-171f-4113-9581-2a57a2a48d46"}
+{"level":"http","message":"\u001b[0mPOST /auth/login \u001b[32m200\u001b[0m 64.355 ms - 439\u001b[0m","timestamp":"2026-05-09 20:08:54"}
+{"level":"info","message":"User logged in","timestamp":"2026-05-09 20:08:54","userId":"98674bc6-171f-4113-9581-2a57a2a48d46"}
+{"level":"http","message":"\u001b[0mPOST /auth/login \u001b[32m200\u001b[0m 64.635 ms - 439\u001b[0m","timestamp":"2026-05-09 20:08:54"}
+{"level":"info","message":"User logged in","timestamp":"2026-05-09 20:08:55","userId":"98674bc6-171f-4113-9581-2a57a2a48d46"}
+{"level":"http","message":"\u001b[0mPOST /auth/login \u001b[32m200\u001b[0m 58.716 ms - 439\u001b[0m","timestamp":"2026-05-09 20:08:55"}
+{"level":"info","message":"User logged in","timestamp":"2026-05-09 20:08:56","userId":"98674bc6-171f-4113-9581-2a57a2a48d46"}
+{"level":"http","message":"\u001b[0mPOST /auth/login \u001b[32m200\u001b[0m 64.011 ms - 439\u001b[0m","timestamp":"2026-05-09 20:08:56"}
+{"level":"info","message":"User logged in","timestamp":"2026-05-09 20:08:56","userId":"98674bc6-171f-4113-9581-2a57a2a48d46"}
+{"level":"http","message":"\u001b[0mPOST /auth/login \u001b[32m200\u001b[0m 67.472 ms - 439\u001b[0m","timestamp":"2026-05-09 20:08:56"}
+{"level":"info","message":"User logged in","timestamp":"2026-05-09 20:08:57","userId":"98674bc6-171f-4113-9581-2a57a2a48d46"}
+{"level":"http","message":"\u001b[0mPOST /auth/login \u001b[32m200\u001b[0m 65.530 ms - 439\u001b[0m","timestamp":"2026-05-09 20:08:57"}
+{"level":"http","message":"\u001b[0mPOST /auth/login \u001b[33m429\u001b[0m 0.387 ms - 56\u001b[0m","timestamp":"2026-05-09 20:08:58"}
