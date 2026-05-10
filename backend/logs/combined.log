@@ -33,3 +33,28 @@
 {"level":"http","message":"\u001b[0mPATCH /orders/fb0ee541-befd-481d-ac3e-0a7ee9728eae/cancel \u001b[31m500\u001b[0m 45.345 ms - 1308\u001b[0m","timestamp":"2026-05-09 22:30:15"}
 {"level":"error","message":"Only pending orders can be cancelled","method":"PATCH","path":"/orders/fb0ee541-befd-481d-ac3e-0a7ee9728eae/cancel","stack":"AppError: Only pending orders can be cancelled\n    at Module.cancelOrder (/home/stenly/Desktop/SuperWorker/backend/src/modules/order/order.service.ts:132:43)\n    at async cancelledOrder (/home/stenly/Desktop/SuperWorker/backend/src/modules/order/order.controller.ts:54:23)","timestamp":"2026-05-09 22:31:11"}
 {"level":"http","message":"\u001b[0mPATCH /orders/fb0ee541-befd-481d-ac3e-0a7ee9728eae/cancel \u001b[33m400\u001b[0m 55.650 ms - 50\u001b[0m","timestamp":"2026-05-09 22:31:11"}
+{"level":"info","message":"Redis Connected","timestamp":"2026-05-10 12:44:15"}
+{"level":"info","message":"Redis Connected","timestamp":"2026-05-10 12:47:11"}
+{"level":"info","message":"Redis Connected","timestamp":"2026-05-10 12:47:52"}
+{"level":"info","message":"Redis Connected","timestamp":"2026-05-10 12:47:57"}
+{"level":"info","message":"Redis Connected","timestamp":"2026-05-10 12:48:25"}
+{"level":"info","message":"Redis Connected","timestamp":"2026-05-10 12:48:53"}
+{"level":"info","message":"Redis Connected","timestamp":"2026-05-10 12:49:09"}
+{"level":"info","message":"Redis Connected","timestamp":"2026-05-10 12:49:30"}
+{"level":"http","message":"\u001b[0mGET /products?page=1&limit=10 \u001b[32m200\u001b[0m 46.179 ms - 1380\u001b[0m","timestamp":"2026-05-10 12:50:02"}
+{"level":"http","message":"\u001b[0mGET /products?page=1&limit=10 \u001b[32m200\u001b[0m 0.952 ms - 1380\u001b[0m","timestamp":"2026-05-10 12:50:05"}
+{"level":"info","message":"Redis Connected","timestamp":"2026-05-10 12:50:11"}
+{"level":"info","message":"Redis Connected","timestamp":"2026-05-10 12:52:14"}
+{"level":"http","message":"\u001b[0mGET /products?page=1&limit=10 \u001b[32m200\u001b[0m 5.420 ms - 1380\u001b[0m","timestamp":"2026-05-10 12:52:16"}
+{"level":"http","message":"\u001b[0mGET /products?page=1&limit=10 \u001b[32m200\u001b[0m 5.921 ms - 1380\u001b[0m","timestamp":"2026-05-10 12:52:17"}
+{"level":"http","message":"\u001b[0mGET /products?page=1&limit=10 \u001b[32m200\u001b[0m 1.003 ms - 1380\u001b[0m","timestamp":"2026-05-10 12:54:43"}
+{"level":"http","message":"\u001b[0mGET /products?page=1&limit=10 \u001b[32m200\u001b[0m 0.994 ms - 1380\u001b[0m","timestamp":"2026-05-10 12:54:55"}
+{"level":"info","message":"Redis Connected","timestamp":"2026-05-10 12:56:25"}
+{"level":"info","message":"Redis Connected","timestamp":"2026-05-10 12:56:37"}
+{"level":"info","message":"Redis Connected","timestamp":"2026-05-10 13:22:00"}
+{"cacheKey":"product:d6e0a4bd-3756-4b91-80d8-49fba774d669","level":"info","message":"Cache miss","timestamp":"2026-05-10 13:22:48"}
+{"level":"http","message":"\u001b[0mGET /products/d6e0a4bd-3756-4b91-80d8-49fba774d669 \u001b[32m200\u001b[0m 36.398 ms - 264\u001b[0m","timestamp":"2026-05-10 13:22:48"}
+{"cacheKey":"product:d6e0a4bd-3756-4b91-80d8-49fba774d669","level":"info","message":"Cache hit","timestamp":"2026-05-10 13:22:50"}
+{"level":"http","message":"\u001b[0mGET /products/d6e0a4bd-3756-4b91-80d8-49fba774d669 \u001b[32m200\u001b[0m 1.849 ms - 264\u001b[0m","timestamp":"2026-05-10 13:22:50"}
+{"level":"info","message":"Redis Connected","timestamp":"2026-05-10 13:24:53"}
+{"level":"info","message":"Redis Connected","timestamp":"2026-05-10 13:26:13"}

@@ -4,6 +4,8 @@ import { AppError } from "../../shared/errors/AppError.js";
 import {paginate} from "../../shared/pagination/pagination.js"
 import {productFilter, type ProductFiltersDto} from "../../shared/filters/productFilter.js";
 import logger from "../../shared/logger/logger.js";
+import { getCache, setCache, deleteCache, deleteCacheByPattern } from "../../shared/cache/cache.service.js";
+
 
 export const createProduct = async (dto: CreateProductDto, sellerId: string) => {
     const categories = await prisma.category.findMany({
@@ -34,6 +36,7 @@ export const createProduct = async (dto: CreateProductDto, sellerId: string) => 
     });
 
     logger.info(`Product created: ${newProduct.id} by seller ${sellerId}`);
+    await deleteCacheByPattern("products:*");
 
     return newProduct;
 };
@@ -54,6 +57,9 @@ export const updateProduct = async (productId: string, dto: UpdateProductDto) =>
     });
 
     logger.info("Updated product: ", {productId});
+    await deleteCacheByPattern("products:*");
+    await deleteCache(`product:${productId}`);
+
 
     return updatedProduct;
 };
@@ -64,6 +70,9 @@ export const deleteProduct = async (productId: string) => {
     if (!product) throw new AppError("Product not found", 404);
     logger.info("Deleting product: ", {productId});
     await prisma.product.delete({ where: { id: productId } });
+    await deleteCacheByPattern("products:*");
+    await deleteCache(`product:${productId}`);   
+
 };
 
 export const updateProductCategory = async (productId: string, categoryIds: string[]) => {
@@ -90,6 +99,13 @@ export const updateProductCategory = async (productId: string, categoryIds: stri
 };
 
 export const getProducts = async (page: number, limit: number, filters: ProductFiltersDto) => {
+    const cacheKey = `products:${page}:${limit}:${JSON.stringify(filters)}`;
+
+    const cached = await getCache(cacheKey);
+    if (cached) return cached;
+
+    logger.info("Cache miss", { cacheKey });
+
     const { take, skip } = paginate(page, limit);
 
     const where: any = productFilter(filters);
@@ -112,18 +128,36 @@ export const getProducts = async (page: number, limit: number, filters: ProductF
         prisma.product.count({ where }),
     ]);
 
-    return {
+    const result = {
         data,
         total,
         page,
         limit,
         totalPages: Math.ceil(total / limit),
     };
+
+    await setCache(cacheKey, result);
+
+    return result;
 };
 
 export const getProductById = async (productId: string) => {
+
+    const cacheKey = `product:${productId}`;
+
+    const cached = await getCache(cacheKey);
+    if (cached) {
+        logger.info("Cache hit", { cacheKey });
+        return cached;
+    }
+
+    logger.info("Cache miss", { cacheKey });
+
     const product = await prisma.product.findUnique({ where: { id: productId } });
     if (!product) throw new AppError("Product not found", 404);
+
+    await setCache(cacheKey, product);
+
     return product;
 };
 

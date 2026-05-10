@@ -1,9 +1,10 @@
 import prisma from "../../prisma/client.js";
 import {AppError} from "../../shared/errors/AppError.js";
 import type {UpdateCategoryDto, CreateCategoryDto} from "./category.schema.js";
-import {paginate, type PaginationDto} from "../../shared/pagination/pagination.js";
-import type {Category} from "@prisma/client";
+import {paginate} from "../../shared/pagination/pagination.js";
 import logger from "../../shared/logger/logger.js";
+import { getCache, setCache, deleteCacheByPattern, deleteCache } from "../../shared/cache/cache.service.js";
+
 
 export const createCategory = async (dto: CreateCategoryDto) => {
     const isExist = await prisma.category.findFirst({
@@ -27,6 +28,7 @@ export const createCategory = async (dto: CreateCategoryDto) => {
     });
 
     logger.info("Created new category", newCategory);
+    deleteCacheByPattern("categories:*")
 
     return newCategory;
 
@@ -56,6 +58,11 @@ export const updateCategory = async (categoryId: string, dto: UpdateCategoryDto)
         }
     });
     logger.info("Updated category", updatedCategory);
+    
+    await deleteCache(`category:${categoryId}`);
+    await deleteCacheByPattern("category:name:*");
+    await deleteCacheByPattern("categories:*");
+
     return updatedCategory;
 };
 
@@ -70,12 +77,20 @@ export const deleteCategory = async (categoryId: string) => {
     });
 
     await prisma.category.delete({where: {id: categoryId}});
+    await deleteCache(`category:${categoryId}`);
+    await deleteCacheByPattern("category:name:*");
+    await deleteCacheByPattern("categories:*");
 
     logger.info("Deleted category", categoryId);
 
 };
 
 export const getCategories = async (page: number, limit: number) => {
+    const cacheKey = `categories:${page}:${limit}`;
+
+    const cached = await getCache(cacheKey);
+    if (cached) return cached;
+
     const { take, skip } =  paginate(page, limit);
 
     const [data, total] = await Promise.all([
@@ -83,24 +98,55 @@ export const getCategories = async (page: number, limit: number) => {
         prisma.category.count(),
     ])
 
-    return {
+    logger.info("Cache miss", { cacheKey });
+
+    const result = {
         data,
         total,
         page,
         limit,
         totalPages: Math.ceil(total / limit),
     };
+
+    await setCache(cacheKey, result);
+
+    return result;
 };
 
 export const getCategoryById = async (categoryId: string) => {
-    const category = await prisma.category.findUnique({where: {id: categoryId}});
+    const cacheKey = `category:${categoryId}`;
+
+    const cached = await getCache(cacheKey);
+    if (cached) {
+        logger.info("Cache hit", { cacheKey });
+        return cached;
+    }
+
+    logger.info("Cache miss", { cacheKey });
+
+    const category = await prisma.category.findUnique({ where: { id: categoryId } });
     if (!category) throw new AppError("Category not found", 404);
+
+    await setCache(cacheKey, category);
+
     return category;
 };
 
-
 export const getCategoryByName = async (name: string) => {
-    const category = await prisma.category.findFirst({where: {name: name}});
+    const cacheKey = `category:name:${name}`;
+
+    const cached = await getCache(cacheKey);
+    if (cached) {
+        logger.info("Cache hit", { cacheKey });
+        return cached;
+    }
+
+    logger.info("Cache miss", { cacheKey });
+
+    const category = await prisma.category.findFirst({ where: { name } });
     if (!category) throw new AppError("Category not found", 404);
+
+    await setCache(cacheKey, category);
+
     return category;
-}
+};
