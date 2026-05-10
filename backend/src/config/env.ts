@@ -3,6 +3,8 @@ const required = [
     "JWT_SECRET",
     "MAILTRAP_PASSWORD",
     "FRONTEND_URL",
+    "REDIS_HOST",
+    "REDIS_PORT",
 ]
 
 export const validateEnv = () => {
