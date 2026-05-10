@@ -25,13 +25,17 @@ export const createOrder = async (userId: string, dto: OrderDto) => {
 
     if (!address) throw new AppError("Address is not found!", 404);
 
-    for (const item of cart.cartItems) {
-        if (item.product.stock < item.quantity) throw new AppError(`Product ${item.product.name} has insufficient stock`, 400);
-    }
-
     const totalPrice: number = cart.cartItems.reduce((total, item) => total + Number(item.product.price) * item.quantity, 0);
 
     const createdOrder = await prisma.$transaction(async (tx) => {
+
+        for (const item of cart.cartItems) {
+            const freshProduct = await tx.product.findUnique({ where: { id: item.productId } });
+            if (!freshProduct || freshProduct.stock < item.quantity) {
+                throw new AppError(`Product ${item.product.name} has insufficient stock`, 400);
+            }
+        }
+
         const newOrder = await tx.order.create({
             data: {
                 userId,

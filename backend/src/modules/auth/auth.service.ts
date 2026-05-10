@@ -7,8 +7,8 @@ import { AppError } from "../../shared/errors/AppError.js";
 import { sendPasswordResetEmail, sendVerificationEmail } from "../../shared/email/email.service.js";
 import logger from "../../shared/logger/logger.js"
 
-const JWT_SECRET: string = process.env.JWT_SECRET || "secret";
-const ACCESS_TOKEN_EXPIRY: string = "1d";
+const JWT_SECRET: string = process.env.JWT_SECRET;
+const ACCESS_TOKEN_EXPIRY: string = "15m";
 const REFRESH_TOKEN_EXPIRY_DAYS: number = 7;
 
 const generateAccessToken = (userId: string, role: string | undefined): string => {

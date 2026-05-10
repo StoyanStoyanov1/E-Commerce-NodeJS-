@@ -19,7 +19,8 @@ export const updateProduct = async(req: Request, res: Response, next: NextFuncti
     try {
         const body: UpdateProductDto = req.body;
         const id = req.params.id as string;
-        const product = await productService.updateProduct(id, body);
+        const sellerId: string = req.user!.userId;
+        const product = await productService.updateProduct(id, body, sellerId);
         res.status(200).json(product);
     } catch (error) {
         next(error);

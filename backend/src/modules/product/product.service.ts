@@ -41,10 +41,11 @@ export const createProduct = async (dto: CreateProductDto, sellerId: string) => 
     return newProduct;
 };
 
-export const updateProduct = async (productId: string, dto: UpdateProductDto) => {
+export const updateProduct = async (productId: string, dto: UpdateProductDto, sellerId: string) => {
     const product = await prisma.product.findUnique({ where: { id: productId } });
 
     if (!product) throw new AppError("Product not found", 404);
+    if (product.sellerId !== sellerId) throw new AppError("Forbidden", 403);
 
     const updatedProduct = await prisma.product.update({
         where: { id: productId },

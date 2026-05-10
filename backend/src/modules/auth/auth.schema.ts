@@ -21,7 +21,7 @@ export type LoginDto = z.infer<typeof LoginSchema>;
 export const ForgotPasswordSchema = z.object({
     email: z.string().email(),
 });
-export type ForgotPasswordDto = z.infer<typeof ResetPasswordSchema>;
+export type ForgotPasswordDto = z.infer<typeof ForgotPasswordSchema>;
 
 export const RefreshSchema = z.object({
     refreshToken: z.string(),
