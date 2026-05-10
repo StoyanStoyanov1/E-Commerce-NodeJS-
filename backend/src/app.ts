@@ -27,7 +27,7 @@ app.use(globalLimiter);
 app.use(express.json());
 app.use(morgan("dev", { stream: morganStream }));
 
-app.use(router);
+app.use("/api", router);
 
 
 //middlewares
