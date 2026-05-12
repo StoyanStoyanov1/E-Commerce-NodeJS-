@@ -62,3 +62,95 @@ describe("POST /api/auth/login", () => {
         expect(res.status).toBe(401);
     });
 });
+
+describe("POST /api/auth/login", () => {
+    it("should return 401 for wrong password", async () => {
+        await request(app).post("/api/auth/register").send(validUser);
+
+        const res = await request(app)
+            .post("/api/auth/login")
+            .send({ email: validUser.email, password: "WrongPassword!" });
+
+        expect(res.status).toBe(401);
+    });
+
+    it("should login successfully and return tokens", async () => {
+        await request(app).post("/api/auth/register").send(validUser);
+
+        const res = await request(app)
+            .post("/api/auth/login")
+            .send({ email: validUser.email, password: validUser.password });
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty("accessToken");
+        expect(res.body).toHaveProperty("refreshToken");
+    });
+
+    it("should return 401 for non-existing user", async () => {
+        const res = await request(app)
+            .post("/api/auth/login")
+            .send({ email: "nobody@test.com", password: "Test1234!" });
+
+        expect(res.status).toBe(401);
+    });
+});
+
+describe("POST /api/auth/refresh", () => {
+    it("should return new tokens with valid refresh token", async () => {
+        await request(app).post("/api/auth/register").send(validUser);
+
+        const loginRes = await request(app)
+            .post("/api/auth/login")
+            .send({ email: validUser.email, password: validUser.password });
+
+        const res = await request(app)
+            .post("/api/auth/refresh")
+            .send({ refreshToken: loginRes.body.refreshToken });
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty("accessToken");
+        expect(res.body).toHaveProperty("refreshToken");
+    });
+
+    it("should return 401 for invalid refresh token", async () => {
+        const res = await request(app)
+            .post("/api/auth/refresh")
+            .send({ refreshToken: "invalid-token" });
+
+        expect(res.status).toBe(401);
+    });
+});
+
+describe("POST /api/auth/logout", () => {
+    it("should logout successfully", async () => {
+        await request(app).post("/api/auth/register").send(validUser);
+
+        const loginRes = await request(app)
+            .post("/api/auth/login")
+            .send({ email: validUser.email, password: validUser.password });
+
+        const res = await request(app)
+            .post("/api/auth/logout")
+            .send({ refreshToken: loginRes.body.refreshToken });
+
+        expect(res.status).toBe(204);
+    });
+
+    it("should return 401 after using revoked refresh token", async () => {
+        await request(app).post("/api/auth/register").send(validUser);
+
+        const loginRes = await request(app)
+            .post("/api/auth/login")
+            .send({ email: validUser.email, password: validUser.password });
+
+        await request(app)
+            .post("/api/auth/logout")
+            .send({ refreshToken: loginRes.body.refreshToken });
+
+        const res = await request(app)
+            .post("/api/auth/refresh")
+            .send({ refreshToken: loginRes.body.refreshToken });
+
+        expect(res.status).toBe(401);
+    });
+});
