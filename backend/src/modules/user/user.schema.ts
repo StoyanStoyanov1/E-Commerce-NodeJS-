@@ -3,7 +3,7 @@ import {validatePhoneNumber} from "../../shared/validation/user.validation.js"
 
 export const CreateAddressSchema = z.object({
     street: z.string().min(2).max(30),
-    cityId: z.string().min(2).max(20),
+    cityId: z.string().uuid().optional(),
 });
 export type CreateAddressDto = z.infer<typeof CreateAddressSchema>;
 
