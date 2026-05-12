@@ -29,8 +29,9 @@ export const updateProduct = async(req: Request, res: Response, next: NextFuncti
 
 export const deleteProduct = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const id= req.params.id as string;
-        await productService.deleteProduct(id);
+        const sellerId: string = req.user!.userId;
+        const id = req.params.id as string;
+        await productService.deleteProduct(id, sellerId);
         res.status(204).send();
     } catch (error) {
         next(error);

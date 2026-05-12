@@ -65,15 +65,17 @@ export const updateProduct = async (productId: string, dto: UpdateProductDto, se
     return updatedProduct;
 };
 
-export const deleteProduct = async (productId: string) => {
+export const deleteProduct = async (productId: string, sellerId: string) => {
     const product = await prisma.product.findUnique({ where: { id: productId } });
-
     if (!product) throw new AppError("Product not found", 404);
-    logger.info("Deleting product: ", {productId});
-    await prisma.product.delete({ where: { id: productId } });
-    await deleteCacheByPattern("products:*");
-    await deleteCache(`product:${productId}`);   
+    if (product.sellerId !== sellerId) throw new AppError("Forbidden", 403);
+    logger.info("Deleting product: ", { productId });
 
+    await prisma.productCategory.deleteMany({ where: { productId } });
+    await prisma.product.delete({ where: { id: productId } });
+
+    await deleteCacheByPattern("products:*");
+    await deleteCache(`product:${productId}`);
 };
 
 export const updateProductCategory = async (productId: string, categoryIds: string[]) => {
