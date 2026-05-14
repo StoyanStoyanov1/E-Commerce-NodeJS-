@@ -28,7 +28,9 @@ export default function Navbar() {
                 <Link href="/" className="text-xl font-semibold">
                     E-Commerce
                 </Link>
-
+                <Link href="/products" className="text-sm text-muted-foreground hover:text-gray-900 transition">
+                    Products
+                </Link>
                 <div className="flex items-center gap-3">
                     {isAuthenticated ? (
                         <>
