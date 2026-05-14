@@ -25,11 +25,7 @@ export const authService = {
     },
 
     async loginAndGetUser(dto: LoginDto): Promise<User> {
-    console.log("Calling login...");
-
         await authService.login(dto);
-
-    console.log("Login successful, calling getMe...");
 
         return authService.getMe();
     },

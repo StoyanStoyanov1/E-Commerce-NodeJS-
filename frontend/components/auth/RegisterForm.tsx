@@ -22,11 +22,11 @@ const registerSchema = z.object({
         .regex(/[A-Z]/, "Must contain at least one uppercase letter")
         .regex(/[0-9]/, "Must contain at least one number")
         .regex(/[!@#$%^&*]/, "Must contain at least one special character"),
-    firstName: z.string().min(2, "Min 2 characters").max(18, "Max 18 characters"),
-    lastName: z.string().min(2, "Min 2 characters").max(18, "Max 18 characters"),
-   phoneNumber: z.string()
-    .regex(/^\+?\d{7,15}$/, "Phone must be 7-15 digits, optionally starting with +"),
-    birthday: z.string().regex(/^\d{2}-\d{2}-\d{4}$/, "Format must be DD-MM-YYYY"),
+        firstName: z.string().min(2, "Min 2 characters").max(18, "Max 18 characters"),
+        lastName: z.string().min(2, "Min 2 characters").max(18, "Max 18 characters"),
+    phoneNumber: z.string()
+        .regex(/^\+?\d{7,15}$/, "Phone must be 7-15 digits, optionally starting with +"),
+        birthday: z.string().regex(/^\d{2}-\d{2}-\d{4}$/, "Format must be DD-MM-YYYY"),
 });
 
 type RegisterForm = z.infer<typeof registerSchema>;
