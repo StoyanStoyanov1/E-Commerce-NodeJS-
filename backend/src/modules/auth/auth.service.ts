@@ -91,6 +91,8 @@ export const changePassword = async (userId: string, dto: ChangePasswordDto) => 
 }
 
 export const register = async (dto: RegisterDto) => {
+    const [day, month, year] = dto.birthday.split("-");
+    const birthDate = new Date(`${year}-${month}-${day}`);
     const existing = await prisma.user.findUnique({
         where: { email: dto.email },
     });
@@ -110,7 +112,7 @@ export const register = async (dto: RegisterDto) => {
                     middleName: dto.middleName,
                     lastName: dto.lastName,
                     phoneNumber: dto.phoneNumber,
-                    birthDate: new Date(dto.birthday),
+                    birthDate: birthDate,
                 },
             },
             cart: {

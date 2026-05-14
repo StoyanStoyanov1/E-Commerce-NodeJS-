@@ -23,4 +23,14 @@ export const authService = {
         const { data } = await api.get<User>(ENDPOINTS.users.me);
         return data as User;
     },
+
+    async loginAndGetUser(dto: LoginDto): Promise<User> {
+    console.log("Calling login...");
+
+        await authService.login(dto);
+
+    console.log("Login successful, calling getMe...");
+
+        return authService.getMe();
+    },
 };
