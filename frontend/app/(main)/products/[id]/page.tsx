@@ -4,9 +4,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { productService } from "@/services/product.service";
 import { cartService } from "@/services/cart.service";
-import ProductImages from "@/components/products/ProductImages";
+import ProductDetail from "@/components/products/ProductDetail";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import useAuthStore from "@/store/authStore";
 import toast from "react-hot-toast";
@@ -50,7 +50,6 @@ export default function ProductDetailPage() {
                     <div className="space-y-4">
                         <Skeleton className="h-8 w-3/4" />
                         <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-full" />
                         <Skeleton className="h-6 w-1/4" />
                         <Skeleton className="h-10 w-full" />
                     </div>
@@ -79,43 +78,11 @@ export default function ProductDetailPage() {
                 </Button>
             </Link>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <ProductImages images={product.images} name={product.name} />
-
-                <div className="space-y-4">
-                    <h1 className="text-3xl font-semibold">{product.name}</h1>
-
-                    <p className="text-muted-foreground">{product.description}</p>
-
-                    {product.categories?.length > 0 && (
-                        <div className="flex gap-2 flex-wrap">
-                            {product.categories.map((cat) => (
-                                <span
-                                    key={cat.id}
-                                    className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full"
-                                >
-                                    {cat.name}
-                                </span>
-                            ))}
-                        </div>
-                    )}
-
-                    <p className="text-2xl font-bold">${product.price}</p>
-
-                    <p className={`text-sm ${product.stock > 0 ? "text-green-600" : "text-red-500"}`}>
-                        {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
-                    </p>
-
-                    <Button
-                        className="w-full cursor-pointer"
-                        disabled={isPending || product.stock === 0}
-                        onClick={handleAddToCart}
-                    >
-                        <ShoppingCart className="h-4 w-4 mr-2" />
-                        {isPending ? "Adding..." : "Add to cart"}
-                    </Button>
-                </div>
-            </div>
+            <ProductDetail
+                product={product}
+                onAddToCart={handleAddToCart}
+                isPending={isPending}
+            />
         </div>
     );
 }

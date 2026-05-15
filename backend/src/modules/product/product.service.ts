@@ -21,6 +21,7 @@ export const createProduct = async (dto: CreateProductDto, sellerId: string) => 
             name: dto.name,
             description: dto.description,
             price: dto.price,
+            currency: dto.currency,
             stock: dto.stock,
             sellerId,
             categories: {
@@ -156,7 +157,17 @@ export const getProductById = async (productId: string) => {
 
     logger.info("Cache miss", { cacheKey });
 
-    const product = await prisma.product.findUnique({ where: { id: productId } });
+    const product = await prisma.product.findUnique({ 
+        where: { id: productId },
+        include: {
+            images: true,
+            categories: {
+                include: {
+                    category: true,
+                }
+            },
+        }
+    });
     if (!product) throw new AppError("Product not found", 404);
 
     await setCache(cacheKey, product);

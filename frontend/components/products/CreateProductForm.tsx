@@ -18,9 +18,10 @@ import PriceField from "@/components/common/PriceField";
 
 
 const createProductSchema = z.object({
-    name: z.string().min(2, "Min 2 characters").max(100, "Max 100 characters"),
-    description: z.string().min(2, "Min 2 characters").max(1000, "Max 1000 characters"),
+    name: z.string().min(2).max(50),
+    description: z.string().min(2).max(1000),
     price: z.coerce.number().positive("Price must be positive"),
+    currency: z.enum(["EUR", "USD"]).default("EUR"),
     stock: z.coerce.number().int().nonnegative("Stock must be 0 or more"),
     categoryIds: z.array(z.string()).min(1, "Select at least one category"),
 });
@@ -40,13 +41,14 @@ export default function CreateProductForm() {
 
     const form = useForm<CreateProductForm>({
         resolver: zodResolver(createProductSchema),
-        defaultValues: {
-            name: "",
-            description: "",
-            price: 0,
-            stock: 0,
-            categoryIds: [],
-        },
+       defaultValues: {
+        name: "",
+        description: "",
+        price: 0,
+        currency: "EUR",
+        stock: 0,
+        categoryIds: [],
+    },
     });
 
     const { mutate: createProduct, isPending } = useMutation({
@@ -118,7 +120,7 @@ export default function CreateProductForm() {
             <FormField
                 name="name"
                 label="Product name"
-                placeholder="iPhone 15 Pro"
+                placeholder="Product name..."
                 control={form.control}
             />
 
@@ -130,11 +132,12 @@ export default function CreateProductForm() {
             />
 
             <div className="grid grid-cols-2 gap-4">
-               <PriceField
-                    name="price"
-                    label="Price"
-                    control={form.control}
-                />
+              <PriceField
+                name="price"
+                currencyName="currency"
+                label="Price"
+                control={form.control}
+            />
               <FormField
                     name="stock"
                     label="Stock"

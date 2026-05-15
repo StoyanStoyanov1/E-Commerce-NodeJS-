@@ -5,6 +5,7 @@ export const CreateProductSchema = z.object({
     description: z.string().min(2).max(1000),
     price: z.number().positive(),
     stock: z.number().int().nonnegative(),
+    currency: z.enum(["EUR", "USD"]).default("EUR"),
     categoryIds: z.array(z.string()).min(1)
 });
 export type CreateProductDto = z.infer<typeof CreateProductSchema>;

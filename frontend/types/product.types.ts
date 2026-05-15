@@ -26,5 +26,6 @@ export interface CreateProductDto {
     description: string;
     price: number;
     stock: number;
+    currency: string;
     categoryIds: string[];
 }
