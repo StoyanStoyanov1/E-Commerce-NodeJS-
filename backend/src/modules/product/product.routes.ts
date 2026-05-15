@@ -9,15 +9,15 @@ const router = Router();
 router.get("/", ProductController.getProducts);
 router.get("/:id", ProductController.getProductById);
 
-router.post("/", authenticate, validate(CreateProductSchema), ProductController.createProduct);
-router.post("/:id/images", authenticate, validate(CreateProductImageSchema), ProductController.createProductImage);
+router.post("/", authenticate, authorize("SELLER", "ADMIN"), validate(CreateProductSchema), ProductController.createProduct);
+router.post("/:id/images", authenticate, authorize("SELLER", "ADMIN"), validate(CreateProductImageSchema), ProductController.createProductImage);
 
-router.put("/:id/images/:imageId", authenticate, ProductController.changePrimaryProductImage);
-router.put("/:id", authenticate, validate(UpdateProductSchema), ProductController.updateProduct);
-router.put("/:id/categories", authenticate, ProductController.updateProductCategory);
+router.put("/:id/images/:imageId", authenticate, authorize("SELLER", "ADMIN"), ProductController.changePrimaryProductImage);
+router.put("/:id", authenticate, authorize("SELLER", "ADMIN"), validate(UpdateProductSchema), ProductController.updateProduct);
+router.put("/:id/categories", authenticate, authorize("SELLER", "ADMIN"), ProductController.updateProductCategory);
 
-router.delete("/:id/images/:imageId", authenticate, ProductController.deleteProductImage);
-router.delete("/:id", authenticate, ProductController.deleteProduct);
+router.delete("/:id/images/:imageId", authenticate, authorize("SELLER", "ADMIN"), ProductController.deleteProductImage);
+router.delete("/:id", authenticate, authorize("SELLER", "ADMIN"), ProductController.deleteProduct);
 
 
 export default router;

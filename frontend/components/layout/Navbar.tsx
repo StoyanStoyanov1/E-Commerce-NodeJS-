@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, User, LogOut } from "lucide-react";
+import { ShoppingCart, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useAuthStore from "@/store/authStore";
 import { authService } from "@/services/auth.service";
@@ -36,11 +36,13 @@ export default function Navbar() {
 
                     {isAuthenticated ? (
                         <>
-                        <Link href="/products/create">
+                        {user?.role === "SELLER" || user?.role === "ADMIN" ? (
+                            <Link href="/products/create">
                                 <Button variant="outline" size="sm" className="cursor-pointer">
                                     + Add Product
                                 </Button>
                             </Link>
+                        ) : null}
                             <Link href="/cart">
                                 <Button variant="ghost" size="icon">
                                     <ShoppingCart className="h-5 w-5" />

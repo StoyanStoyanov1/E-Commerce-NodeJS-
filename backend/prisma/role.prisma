@@ -10,4 +10,5 @@ enum RoleType {
   ADMIN
   CUSTOMER
   MODERATOR
+  SELLER
 }

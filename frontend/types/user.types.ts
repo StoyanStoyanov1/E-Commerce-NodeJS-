@@ -3,6 +3,6 @@ export interface User {
     email: string;
     firstName: string;
     lastName: string;
-    role: "ADMIN" | "CUSTOMER" | "MODERATOR";
+    role: "ADMIN" | "CUSTOMER" | "SELLER" | "MODERATOR";
     isAktiv: boolean;
 }

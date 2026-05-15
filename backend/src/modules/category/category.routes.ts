@@ -1,14 +1,14 @@
 import {Router} from 'express';
 import * as CategoryController from "./category.controller.js";
-import { authenticate } from "../../middleware/auth.middleware.js";
 import {CreateCategorySchema, UpdateCategorySchema} from "./category.schema.js"
 import {validate} from "../../middleware/validate.middleware.js";
+import { authenticate, authorize } from "../../middleware/auth.middleware.js";
 
 const router = Router();
 
-router.post("/", authenticate, validate(CreateCategorySchema), CategoryController.createCategory);
-router.put("/:id", authenticate, validate(UpdateCategorySchema), CategoryController.updateCategory);
-router.delete("/:id", authenticate, CategoryController.deleteCategory);
+router.post("/", authenticate, authorize("ADMIN"), validate(CreateCategorySchema), CategoryController.createCategory);
+router.put("/:id", authenticate, authorize("ADMIN"), validate(UpdateCategorySchema), CategoryController.updateCategory);
+router.delete("/:id", authenticate, authorize("ADMIN"), CategoryController.deleteCategory);
 router.get("/all", CategoryController.getCategories);
 router.get("/id/:id", authenticate, CategoryController.getCategoryById);
 router.get("/name/:name", CategoryController.getCategoryByName);
