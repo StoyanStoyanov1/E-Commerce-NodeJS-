@@ -31,9 +31,16 @@ export default function Navbar() {
                 <Link href="/products" className="text-sm text-muted-foreground hover:text-gray-900 transition">
                     Products
                 </Link>
+
                 <div className="flex items-center gap-3">
+
                     {isAuthenticated ? (
                         <>
+                        <Link href="/products/create">
+                                <Button variant="outline" size="sm" className="cursor-pointer">
+                                    + Add Product
+                                </Button>
+                            </Link>
                             <Link href="/cart">
                                 <Button variant="ghost" size="icon">
                                     <ShoppingCart className="h-5 w-5" />

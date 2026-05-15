@@ -20,3 +20,11 @@ export interface Category {
     name: string;
     parentId: string | null;
 }
+
+export interface CreateProductDto {
+    name: string;
+    description: string;
+    price: number;
+    stock: number;
+    categoryIds: string[];
+}

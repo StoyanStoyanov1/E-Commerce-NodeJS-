@@ -1,6 +1,6 @@
 import api from "@/lib/axios";
 import { ENDPOINTS } from "@/lib/endpoints";
-import { Product, PaginatedResponse } from "@/types";
+import { Product, PaginatedResponse, CreateProductDto} from "@/types";
 
 export interface ProductFilters {
     page?: number;
@@ -28,5 +28,14 @@ export const productService = {
     async getById(id: string): Promise<Product> {
         const { data } = await api.get(`${ENDPOINTS.products}/${id}`);
         return data;
+    },
+
+    async create(dto: CreateProductDto): Promise<Product> {
+        const { data } = await api.post(ENDPOINTS.products, dto);
+        return data;
+    },
+
+    async addImage(productId: string, url: string, isPrimary: boolean): Promise<void> {
+        await api.post(`${ENDPOINTS.products}/${productId}/images`, { url, isPrimary });
     },
 };

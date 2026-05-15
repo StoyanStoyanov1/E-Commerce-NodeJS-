@@ -13,6 +13,8 @@ interface FormFieldProps<T extends FieldValues> {
     control: Control<T>;
     info?: string;
     showError?: boolean;
+    min?: number;
+    hideArrows?: boolean;
 }
 
 export default function FormField<T extends FieldValues>({
@@ -23,6 +25,8 @@ export default function FormField<T extends FieldValues>({
     control,
     info,
     showError = true,
+    min,
+    hideArrows,
 }: FormFieldProps<T>) {
     return (
         <Controller
@@ -43,12 +47,32 @@ export default function FormField<T extends FieldValues>({
                             </div>
                         )}
                     </div>
-                    <Input
+                   <Input
                         {...field}
                         id={name}
                         type={type}
                         placeholder={placeholder}
+                        min={min}
                         aria-invalid={fieldState.invalid}
+                       onChange={(e) => {
+    const value = e.target.value;
+    if (type === "number" && min !== undefined) {
+        const cleaned = value.replace(/[^0-9]/g, "");
+        const num = cleaned === "" ? min : Number(cleaned);
+        field.onChange(num);
+        e.target.value = String(num === 0 ? "" : num);
+    } else {
+        field.onChange(value);
+    }
+}}
+                        onKeyDown={(e) => {
+                            if (hideArrows && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
+                                e.preventDefault();
+                            }
+                        }}
+                        onWheel={(e) => {
+                            if (hideArrows) e.currentTarget.blur();
+                        }}
                     />
                     {showError && fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />
