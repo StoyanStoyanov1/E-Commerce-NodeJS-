@@ -9,7 +9,11 @@ export const getCart = async (userId: string) => {
         include: {
             cartItems: {
                 include: {
-                    product: true,
+                    product: {
+                        include: {
+                            images: true,
+                        }
+                    },
                 },
             },
         },
@@ -21,7 +25,11 @@ export const getCart = async (userId: string) => {
             include: {
                 cartItems: {
                     include: {
-                        product: true,
+                        product: {
+                            include: {
+                                images: true,
+                            }
+                        },
                     },
                 },
             },
