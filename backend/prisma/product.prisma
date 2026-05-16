@@ -3,6 +3,7 @@ model Product {
   name        String   @db.VarChar(50)
   description String?  @db.VarChar(255)
   price       Decimal  @db.Decimal(10, 2)
+  currency    String   @default("EUR") @db.VarChar(3)
   stock       Int
   sellerId    String   @db.Uuid
   createdAt   DateTime @default(now())

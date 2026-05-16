@@ -18,7 +18,11 @@ const loginSchema = z.object({
 
 type LoginForm = z.infer<typeof loginSchema>;
 
-export default function LoginForm() {
+interface LoginFormProps {
+    onSuccess?: () => void;
+}
+
+export default function LoginForm({onSuccess}: LoginFormProps) {
     const router = useRouter();
     const { setUser } = useAuthStore();
     const [authError, setAuthError] = useState<string | null>(null);
@@ -32,15 +36,17 @@ export default function LoginForm() {
         mode: "onSubmit",
     });
 
-    const onSubmit = async (data: LoginForm) => {
+      const onSubmit = async (data: LoginForm) => {
         setAuthError(null);
-     
         try {
             const user = await authService.loginAndGetUser(data);
-
             setUser(user);
             toast.success("Welcome back!");
-            router.push("/");
+            if (onSuccess) {
+                onSuccess();
+            } else {
+                router.push("/");
+            }
         } catch (error: any) {
             if (error.response) {
                 setAuthError("Invalid email or password. Please try again.");

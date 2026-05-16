@@ -1,6 +1,6 @@
 import {Router} from "express";
 import * as ProductController from "./product.controller.js";
-import { authenticate } from "../../middleware/auth.middleware.js";
+import { authenticate, authorize } from "../../middleware/auth.middleware.js";
 import {CreateProductSchema, UpdateProductSchema, CreateProductImageSchema} from "./product.schema.js"
 import {validate} from "../../middleware/validate.middleware.js";
 
