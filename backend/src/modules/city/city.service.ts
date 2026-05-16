@@ -22,6 +22,11 @@ export const createCity = async (dto: CreateCityDto) => {
     const country = await prisma.country.findUnique({ where: { id: dto.countryId } });
     if (!country) throw new AppError("Country not found", 404);
 
+    const existing = await prisma.city.findFirst({
+        where: { name: dto.name, countryId: dto.countryId }
+    });
+    if (existing) throw new AppError("City already exists in this country", 409);
+
     return prisma.city.create({
         data: {
             name: dto.name,
@@ -31,7 +36,6 @@ export const createCity = async (dto: CreateCityDto) => {
         include: { country: true },
     });
 };
-
 export const getCountries = async () => {
     return prisma.country.findMany({
         include: { cities: true },

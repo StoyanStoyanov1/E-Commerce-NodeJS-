@@ -27,4 +27,6 @@ model City {
 
   country   Country   @relation(fields: [countryId], references: [id])
   addresses Address[]
+
+  @@unique([name, countryId])
 }

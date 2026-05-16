@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import * as cityService from "./city.service.js";
 
 export const getCities = async (req: Request, res: Response, next: NextFunction) => {
