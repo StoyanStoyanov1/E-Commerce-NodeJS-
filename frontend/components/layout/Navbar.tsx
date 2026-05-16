@@ -36,6 +36,9 @@ export default function Navbar() {
 
                     {isAuthenticated ? (
                         <>
+                    <Link href="/orders" className="text-sm text-muted-foreground hover:text-gray-900 transition">
+                            Orders
+                        </Link>
                         {user?.role === "SELLER" || user?.role === "ADMIN" ? (
                             <Link href="/products/create">
                                 <Button variant="outline" size="sm" className="cursor-pointer">

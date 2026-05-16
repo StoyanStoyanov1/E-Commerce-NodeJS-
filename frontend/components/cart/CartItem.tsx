@@ -12,7 +12,6 @@ interface CartItemProps {
 export default function CartItem({ item, onRemove }: CartItemProps) {
     const primaryImage = item.product.images?.find(img => img.isPrimary)?.url;
     const currency = item.product.currency === "USD" ? "$" : "€";
-    console.log("CartItem render", { item, primaryImage });
     return (
         <div className="flex items-center gap-4 p-4 border rounded-xl bg-white">
             <div className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
