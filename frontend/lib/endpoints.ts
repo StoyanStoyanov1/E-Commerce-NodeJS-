@@ -16,4 +16,6 @@ export const ENDPOINTS = {
         items: "/cart/items",
     },
     orders: "/orders",
+    cities: "/cities",
+    countries: "/cities/countries/all",
 };
