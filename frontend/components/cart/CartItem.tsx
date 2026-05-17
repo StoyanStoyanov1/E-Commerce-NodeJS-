@@ -13,30 +13,34 @@ export default function CartItem({ item, onRemove }: CartItemProps) {
     const primaryImage = item.product.images?.find(img => img.isPrimary)?.url;
     const currency = item.product.currency === "USD" ? "$" : "€";
     return (
-        <div className="flex items-center gap-4 p-4 border rounded-xl bg-white">
-            <div className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
-                {primaryImage ? (
-                    <Image src={primaryImage} alt={item.product.name} fill className="object-cover" />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-                        No image
-                    </div>
-                )}
+        <div className="flex flex-col gap-4 rounded-[28px] border border-border bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-4">
+                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-3xl bg-slate-100">
+                    {primaryImage ? (
+                        <Image src={primaryImage} alt={item.product.name} fill className="object-cover" />
+                    ) : (
+                        <div className="flex h-full w-full items-center justify-center text-slate-400 text-xs">
+                            No image
+                        </div>
+                    )}
+                </div>
+
+                <div>
+                    <Link href={`/products/${item.product.id}`}>
+                        <h3 className="text-base font-semibold text-slate-950 hover:underline">{item.product.name}</h3>
+                    </Link>
+                    <p className="text-sm text-slate-500 mt-1">
+                        {currency}{Number(item.product.price).toFixed(2)} × {item.quantity}
+                    </p>
+                </div>
             </div>
 
-            <div className="flex-1">
-                <Link href={`/products/${item.product.id}`}>
-                    <h3 className="font-medium hover:underline">{item.product.name}</h3>
-                </Link>
-                <p className="text-sm text-muted-foreground">
-                    {currency}{Number(item.product.price).toFixed(2)} × {item.quantity}
-                </p>
-            </div>
-
-            <div className="text-right">
-                <p className="font-semibold">
-                    {currency}{(Number(item.product.price) * item.quantity).toFixed(2)}
-                </p>
+            <div className="flex items-center justify-between gap-4 text-right">
+                <div>
+                    <p className="font-semibold text-slate-950">
+                        {currency}{(Number(item.product.price) * item.quantity).toFixed(2)}
+                    </p>
+                </div>
                 <Button
                     variant="ghost"
                     size="icon"

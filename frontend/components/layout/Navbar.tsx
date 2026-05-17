@@ -23,36 +23,41 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="border-b bg-white sticky top-0 z-50">
-            <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-                <Link href="/" className="text-xl font-semibold">
-                    E-Commerce
-                </Link>
-                <Link href="/products" className="text-sm text-muted-foreground hover:text-gray-900 transition">
-                    Products
-                </Link>
-
-                <div className="flex items-center gap-3">
-
-                    {isAuthenticated ? (
-                        <>
-                    <Link href="/orders" className="text-sm text-muted-foreground hover:text-gray-900 transition">
+        <nav className="sticky top-0 z-50 border-b border-border bg-white/90 backdrop-blur-xl shadow-sm">
+            <div className="mx-auto flex h-20 max-w-6xl items-center justify-between gap-6 px-4">
+                <div className="flex items-center gap-4">
+                    <Link href="/" className="inline-flex items-center gap-3 text-xl font-semibold tracking-tight text-slate-950">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">S</span>
+                        E-Commerce
+                    </Link>
+                    <Link href="/products" className="text-sm font-medium text-slate-600 transition hover:text-slate-950">
+                        Products
+                    </Link>
+                    {isAuthenticated && (
+                        <Link href="/orders" className="text-sm font-medium text-slate-600 transition hover:text-slate-950">
                             Orders
                         </Link>
-                        {user?.role === "SELLER" || user?.role === "ADMIN" ? (
-                            <Link href="/products/create">
-                                <Button variant="outline" size="sm" className="cursor-pointer">
-                                    + Add Product
-                                </Button>
-                            </Link>
-                        ) : null}
+                    )}
+                </div>
+
+                <div className="flex items-center gap-3">
+                    {isAuthenticated ? (
+                        <>
+                            {user?.role === "SELLER" || user?.role === "ADMIN" ? (
+                                <Link href="/products/create">
+                                    <Button variant="outline" size="sm" className="cursor-pointer">
+                                        + Add Product
+                                    </Button>
+                                </Link>
+                            ) : null}
+
                             <Link href="/cart">
                                 <Button variant="ghost" size="icon">
                                     <ShoppingCart className="h-5 w-5" />
                                 </Button>
                             </Link>
 
-                            <span className="text-sm text-muted-foreground">
+                            <span className="hidden text-sm font-medium text-slate-600 md:block">
                                 {user?.firstName}
                             </span>
 

@@ -50,7 +50,9 @@ export default function CartPage() {
         return (
             <div className="max-w-4xl mx-auto px-4 py-8 space-y-4">
                 {Array.from({ length: 3 }).map((_, i) => (
-                    <Skeleton key={i} className="h-24 w-full rounded-xl" />
+                    <div key={i} className="rounded-[28px] border border-border bg-white p-4 shadow-sm">
+                        <Skeleton className="h-24 w-full rounded-2xl" />
+                    </div>
                 ))}
             </div>
         );
@@ -64,19 +66,24 @@ export default function CartPage() {
 
     if (items.length === 0) {
         return (
-            <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-                <h1 className="text-2xl font-semibold mb-4">Your cart is empty</h1>
-                <p className="text-muted-foreground mb-6">Add some products to get started.</p>
-                <Link href="/products">
-                    <Button className="cursor-pointer">Browse products</Button>
-                </Link>
+            <div className="max-w-4xl mx-auto px-4 py-16">
+                <div className="rounded-[28px] border border-border bg-white p-10 shadow-sm text-center">
+                    <h1 className="text-3xl font-semibold mb-4">Your cart is empty</h1>
+                    <p className="text-slate-600 mb-6">Add some products to get started.</p>
+                    <Link href="/products">
+                        <Button className="cursor-pointer">Browse products</Button>
+                    </Link>
+                </div>
             </div>
         );
     }
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-8">
-            <h1 className="text-2xl font-semibold mb-6">Your cart</h1>
+            <div className="rounded-[28px] border border-border bg-white p-8 shadow-sm mb-8">
+                <h1 className="text-3xl font-semibold text-slate-950">Your cart</h1>
+                <p className="mt-2 text-sm text-slate-600">Review your selected items before checkout.</p>
+            </div>
             <CartList items={items} onRemove={(id) => removeItem(id)} />
             <CartSummary total={total} onClear={() => clearCart()} />
         </div>

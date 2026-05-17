@@ -12,12 +12,12 @@ export default function CartSummary({ total, onClear }: CartSummaryProps) {
     const router = useRouter();
 
     return (
-        <div className="mt-6 p-4 border rounded-xl bg-white">
-            <div className="flex justify-between items-center mb-4">
+        <div className="mt-6 rounded-[28px] border border-border bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-4 text-slate-950">
                 <span className="text-lg font-medium">Total</span>
-                <span className="text-2xl font-bold">{total.toFixed(2)}</span>
+                <span className="text-3xl font-bold">{total.toFixed(2)}</span>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-3">
                 <Button
                     className="w-full cursor-pointer"
                     onClick={() => router.push("/checkout")}

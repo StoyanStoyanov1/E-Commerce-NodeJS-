@@ -7,7 +7,7 @@ export interface Product {
     currency: string;
     sellerId: string;
     images: ProductImage[];
-    categories: Category[];
+    categories: ProductCategory[];
 }
 
 export interface ProductImage {
@@ -20,6 +20,11 @@ export interface Category {
     id: string;
     name: string;
     parentId: string | null;
+}
+
+export interface ProductCategory {
+    categoryId: string;
+    category: Category;
 }
 
 export interface CreateProductDto {

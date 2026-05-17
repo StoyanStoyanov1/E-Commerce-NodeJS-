@@ -35,66 +35,68 @@ export default function ProductDetail({ product, onAddToCart, isPending }: Produ
     };  
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <ProductImages images={product.images} name={product.name} />
+        <div className="grid gap-10 lg:grid-cols-[420px_minmax(0,1fr)]">
+            <div className="rounded-[2rem] border border-border bg-white p-6 shadow-sm">
+                <ProductImages images={product.images} name={product.name} />
+            </div>
 
-            <div className="space-y-4">
-                <h1 className="text-3xl font-semibold">{product.name}</h1>
-
-                <p className="text-muted-foreground">{product.description}</p>
+            <div className="space-y-6 rounded-[2rem] border border-border bg-white p-8 shadow-sm">
+                <div className="space-y-4">
+                    <h1 className="text-3xl font-semibold text-slate-950">{product.name}</h1>
+                    <p className="text-base leading-7 text-slate-600">{product.description}</p>
+                </div>
 
                 {product.categories?.length > 0 && (
-                    <div className="flex gap-2 flex-wrap">
-                        {product.categories.map((cat: any) => (
+                    <div className="flex flex-wrap gap-2">
+                        {product.categories.map((cat) => (
                             <span
-                                key={cat.category?.id || cat.categoryId}
-                                className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full"
+                                key={cat.category?.id ?? cat.categoryId}
+                                className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600"
                             >
-                                {cat.category?.name}
+                                {cat.category?.name ?? cat.categoryId}
                             </span>
                         ))}
                     </div>
                 )}
 
-                <p className="text-2xl font-bold">
-                    {currency}{Number(product.price).toFixed(2)}
-                </p>
-
-                <p className={`text-sm ${product.stock > 0 ? "text-green-600" : "text-red-500"}`}>
-                    {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
-                </p>
-
-               {product.stock > 0 && (
-                <div className="flex items-center gap-3">
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={decrement}
-                        disabled={quantity <= 1}
-                        className="cursor-pointer"
-                    >
-                        <Minus className="h-4 w-4" />
-                    </Button>
-                    <input
-                        type="number"
-                        value={quantity}
-                        onChange={handleQuantityChange}
-                        className="w-16 text-center border rounded-lg py-1.5 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={increment}
-                        disabled={quantity >= product.stock}
-                        className="cursor-pointer"
-                    >
-                        <Plus className="h-4 w-4" />
-                    </Button>
-                    <span className="text-sm text-muted-foreground">
-                        Max: {product.stock}
-                    </span>
+                <div className="flex items-center justify-between gap-4">
+                    <p className="text-3xl font-bold text-slate-950">{currency}{Number(product.price).toFixed(2)}</p>
+                    <p className={`text-sm font-medium ${product.stock > 0 ? "text-emerald-600" : "text-red-500"}`}>
+                        {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
+                    </p>
                 </div>
-            )}
+
+                {product.stock > 0 && (
+                    <div className="grid gap-4 sm:grid-cols-[auto_minmax(0,1fr)] items-center">
+                        <div className="flex items-center gap-3 rounded-3xl border border-border bg-slate-50 p-2">
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={decrement}
+                                disabled={quantity <= 1}
+                                className="cursor-pointer"
+                            >
+                                <Minus className="h-4 w-4" />
+                            </Button>
+                            <input
+                                type="number"
+                                value={quantity}
+                                onChange={handleQuantityChange}
+                                className="no-spinner appearance-none w-20 rounded-2xl border border-border bg-white px-3 py-2 text-center text-sm text-slate-950 outline-none"
+                            />
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={increment}
+                                disabled={quantity >= product.stock}
+                                className="cursor-pointer"
+                            >
+                                <Plus className="h-4 w-4" />
+                            </Button>
+                        </div>
+                        <p className="text-sm text-slate-500">Max quantity: {product.stock}</p>
+                    </div>
+                )}
 
                 <Button
                     className="w-full cursor-pointer"

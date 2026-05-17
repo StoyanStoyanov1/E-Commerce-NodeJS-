@@ -12,14 +12,14 @@ export default function ProductCard({ product }: ProductCardProps) {
 
     return (
         <Link href={`/products/${product.id}`}>
-            <div className="border rounded-xl overflow-hidden bg-white hover:shadow-md transition cursor-pointer">
-                <div className="aspect-square bg-gray-100 relative overflow-hidden">
+            <div className="group overflow-hidden rounded-[28px] border border-border bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-xl cursor-pointer">
+                <div className="relative aspect-square overflow-hidden bg-linear-to-br from-slate-100 to-white">
                     {primaryImage ? (
                         <Image
                             src={primaryImage}
                             alt={product.name}
                             fill
-                            className="object-cover"
+                            className="object-cover transition duration-500 group-hover:scale-105"
                         />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center">
@@ -27,10 +27,14 @@ export default function ProductCard({ product }: ProductCardProps) {
                         </div>
                     )}
                 </div>
-                <div className="p-4">
-                    <h3 className="font-medium text-gray-900 truncate">{product.name}</h3>
-                    <p className="text-sm text-gray-500 mt-1 line-clamp-2">{product.description}</p>
-                    <p className="font-semibold mt-2">{currency}{Number(product.price).toFixed(2)}</p>
+                <div className="p-5 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                        <h3 className="text-lg font-semibold text-slate-950 truncate">{product.name}</h3>
+                        <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+                            {currency}{Number(product.price).toFixed(2)}
+                        </span>
+                    </div>
+                    <p className="text-sm leading-6 text-slate-600 line-clamp-2">{product.description}</p>
                 </div>
             </div>
         </Link>

@@ -76,10 +76,13 @@ export default function CheckoutContainer() {
    
     return (
         <div className="max-w-4xl mx-auto px-4 py-8">
-            <h1 className="text-2xl font-semibold mb-6">Checkout</h1>
+            <div className="rounded-[28px] border border-border bg-white p-8 shadow-sm mb-8">
+                <h1 className="text-3xl font-semibold text-slate-950">Checkout</h1>
+                <p className="mt-2 text-sm text-slate-600">Confirm your delivery address and place your order.</p>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                <div className="space-y-4 rounded-[28px] border border-border bg-white p-6 shadow-sm">
                     <h2 className="font-semibold text-lg">Delivery address</h2>
 
                     {!showAddressForm ? (
@@ -97,7 +100,7 @@ export default function CheckoutContainer() {
                             />
                             <button
                                 onClick={() => setShowAddressForm(false)}
-                                className="text-sm text-muted-foreground hover:underline cursor-pointer"
+                                className="text-sm text-slate-600 hover:text-slate-900 hover:underline cursor-pointer"
                             >
                                 ← Back to addresses
                             </button>
