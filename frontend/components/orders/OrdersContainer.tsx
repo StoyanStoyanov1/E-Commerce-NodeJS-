@@ -31,6 +31,7 @@ export default function OrdersContainer() {
         mutationFn: (id: string) => orderService.cancelOrder(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["orders"] });
+            queryClient.invalidateQueries({ queryKey: ["products"] });
             toast.success("Order cancelled");
         },
         onError: () => {

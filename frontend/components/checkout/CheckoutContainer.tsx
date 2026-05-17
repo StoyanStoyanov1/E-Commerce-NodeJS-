@@ -48,6 +48,7 @@ export default function CheckoutContainer() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["cart"] });
             queryClient.invalidateQueries({ queryKey: ["orders"] });
+            queryClient.invalidateQueries({ queryKey: ["products"] });
             toast.success("Order placed successfully!");
             router.push("/orders");
         },
