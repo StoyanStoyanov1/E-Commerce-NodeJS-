@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { cartService } from "@/services/cart.service";
@@ -56,6 +56,12 @@ export default function CheckoutContainer() {
         },
     });
 
+    useEffect(() => {
+    if (!cartLoading && (!cart || cart.cartItems.length === 0)) {
+        router.push("/cart");
+    }
+    }, [cart, cartLoading, router]);
+
     if (cartLoading || addressesLoading) {
         return (
             <div className="max-w-4xl mx-auto px-4 py-8 space-y-4">
@@ -65,11 +71,8 @@ export default function CheckoutContainer() {
         );
     }
 
-    if (!cart || cart.cartItems.length === 0) {
-        router.push("/cart");
-        return null;
-    }
 
+   
     return (
         <div className="max-w-4xl mx-auto px-4 py-8">
             <h1 className="text-2xl font-semibold mb-6">Checkout</h1>
@@ -101,12 +104,14 @@ export default function CheckoutContainer() {
                     )}
                 </div>
 
-                <CheckoutSummary
-                    cart={cart}
-                    onConfirm={() => placeOrder()}
-                    isSubmitting={placingOrder}
-                    selectedAddressId={selectedAddressId}
-                />
+               {cart && (
+                    <CheckoutSummary
+                        cart={cart}
+                        onConfirm={() => placeOrder()}
+                        isSubmitting={placingOrder}
+                        selectedAddressId={selectedAddressId}
+                    />
+                )}
             </div>
         </div>
     );

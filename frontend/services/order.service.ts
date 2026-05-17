@@ -17,4 +17,8 @@ export const orderService = {
         const { data } = await api.patch(`${ENDPOINTS.orders}/${id}/cancel`);
         return data;
     },
+    async createOrder(addressId: string): Promise<Order> {
+        const { data } = await api.post(ENDPOINTS.orders, { addressId });
+        return data;
+    },
 };
